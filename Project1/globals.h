@@ -2,8 +2,7 @@
 // #ifndef GLOBALS_HEADER
 // #define GLOBALS_HEADER
 
-#include "Arena.h"
-#include "utilities.cpp"
+class Arena;
 
 ///////////////////////////////////////////////////////////////////////////
 // Manifest constants

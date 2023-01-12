@@ -4,6 +4,8 @@
 
 #include "Arena.h"
 
+class Arena;
+
 class Rabbit  // This is needed timplementation file named utilities.cpp, and place
 {
   public:

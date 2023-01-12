@@ -5,8 +5,12 @@
 #include <string>
 #include "Player.h"
 #include "Rabbit.h"
+#include "globals.h"
 
 using namespace std;
+
+class Player;
+class Rabbit;
 
 class Arena
 {

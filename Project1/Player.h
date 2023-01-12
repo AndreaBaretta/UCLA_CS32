@@ -7,6 +7,8 @@
 
 using namespace std;
 
+class Arena;
+
 class Player
 {
   public:
