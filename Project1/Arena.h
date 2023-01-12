@@ -5,6 +5,7 @@
 #include <string>
 #include "Player.h"
 #include "Rabbit.h"
+#include "History.h"
 #include "globals.h"
 
 using namespace std;
@@ -33,6 +34,7 @@ class Arena
     bool addRabbit(int r, int c);
     bool addPlayer(int r, int c);
     void moveRabbits();
+    History& history();
 
   private:
     int     m_grid[MAXROWS][MAXCOLS];
@@ -42,6 +44,7 @@ class Arena
     Rabbit* m_rabbits[MAXRABBITS];
     int     m_nRabbits;
     int     m_turns;
+    History m_his;
 
       // Helper functions
     void checkPos(int r, int c, string functionName) const;

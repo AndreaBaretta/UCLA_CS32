@@ -1,12 +1,13 @@
 #include <iostream>
 #include "Arena.h"
+#include "History.h"
 #include "globals.h"
 
 ///////////////////////////////////////////////////////////////////////////
 //  Arena implementation
 ///////////////////////////////////////////////////////////////////////////
 
-Arena::Arena(int nRows, int nCols)
+Arena::Arena(int nRows, int nCols) : m_his(History(nRows, nCols))
 {
     if (nRows <= 0  ||  nCols <= 0  ||  nRows > MAXROWS  ||  nCols > MAXCOLS)
     {
@@ -190,6 +191,10 @@ void Arena::moveRabbits()
 
       // Another turn has been taken
     m_turns++;
+}
+
+History& Arena::history() {
+    return m_his;
 }
 
 bool Arena::isPosInBounds(int r, int c) const

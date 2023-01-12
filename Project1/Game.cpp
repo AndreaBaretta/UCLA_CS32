@@ -64,7 +64,7 @@ string Game::takePlayerTurn()
 {
     for (;;)
     {
-        cout << "Your move (n/e/s/w/c or nothing): ";
+        cout << "Your move (n/e/s/w/x/h or nothing): ";
         string playerMove;
         getline(cin, playerMove);
 
@@ -80,10 +80,18 @@ string Game::takePlayerTurn()
         }
         else if (playerMove.size() == 1)
         {
-            if (tolower(playerMove[0]) == 'c')
+            if (tolower(playerMove[0]) == 'x') { // changed from 'c' to 'x' in new version of game
                 return player->dropPoisonedCarrot();
-            else if (decodeDirection(playerMove[0], dir))
+            } else if (tolower(playerMove[0]) == 'h') {
+                m_arena->history().display();
+                cout << "Press enter to contine.";
+                cin.ignore(10000,'\n');
+                clearScreen();
+                m_arena->display("");
+                continue;
+            } else if (decodeDirection(playerMove[0], dir)) {
                 return player->move(dir);
+            }
         }
         cout << "Player move must be nothing, or 1 character n/e/s/w/c." << endl;
     }
