@@ -1,6 +1,5 @@
-#pragma once
-// #ifndef ARENA_HEADER
-// #define ARENA_HEADER
+#ifndef ARENA_HEADER
+#define ARENA_HEADER
 
 #include <string>
 #include "Player.h"
@@ -51,4 +50,4 @@ class Arena
     bool isPosInBounds(int r, int c) const;
 };
 
-// #endif
+#endif

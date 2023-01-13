@@ -1,3 +1,6 @@
+#ifndef GAME_HEADER
+#define GAME_HEADER
+
 #include <string>
 #include "Arena.h"
 
@@ -18,4 +21,7 @@ class Game
 
       // Helper functions
     string takePlayerTurn();
+
 };
+
+#endif

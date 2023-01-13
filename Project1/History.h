@@ -1,6 +1,5 @@
-#pragma once
-// #ifndef HISTORY_HEADER
-// #define HISTORY_HEADER
+#ifndef HISTORY_HEADER
+#define HISTORY_HEADER
 
 #include "globals.h"
 
@@ -16,4 +15,4 @@ class History
       int m_cols;
 };
 
-// #endif
+#endif

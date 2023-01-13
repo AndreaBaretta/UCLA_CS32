@@ -1,6 +1,5 @@
-#pragma once
-// #ifndef PLAYER_HEADER
-// #define PLAYER_HEADER
+#ifndef PLAYER_HEADER
+#define PLAYER_HEADER
 
 #include <string>
 #include "Arena.h"
@@ -32,4 +31,4 @@ class Player
     bool   m_dead;
 };
 
-// #endif
+#endif

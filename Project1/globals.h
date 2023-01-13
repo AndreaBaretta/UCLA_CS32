@@ -1,6 +1,5 @@
-#pragma once
-// #ifndef GLOBALS_HEADER
-// #define GLOBALS_HEADER
+#ifndef GLOBALS_HEADER
+#define GLOBALS_HEADER
 
 class Arena;
 
@@ -35,4 +34,4 @@ bool recommendMove(const Arena& a, int r, int c, int& bestDir);
 int computeDanger(const Arena& a, int r, int c);
 void clearScreen();
 
-// #endif
+#endif

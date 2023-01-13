@@ -1,6 +1,5 @@
-#pragma once
-// #ifndef RABBIT_HEADER
-// #define RABBIT_HEADER
+#ifndef RABBIT_HEADER
+#define RABBIT_HEADER
 
 #include "Arena.h"
 
@@ -28,4 +27,4 @@ class Rabbit  // This is needed timplementation file named utilities.cpp, and pl
     int    m_idleTurnsRemaining;
 };
 
-// #endif
+#endif
