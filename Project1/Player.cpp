@@ -1,6 +1,7 @@
 #include <iostream>
 #include "Player.h"
 #include "Arena.h"
+#include "History.h"
 #include "globals.h"
 
 ///////////////////////////////////////////////////////////////////////////

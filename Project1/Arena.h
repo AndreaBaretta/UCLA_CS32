@@ -2,9 +2,6 @@
 #define ARENA_HEADER
 
 #include <string>
-// #include "Player.h"
-// #include "Rabbit.h"
-#include "History.h"
 #include "globals.h"
 
 using namespace std;
@@ -44,7 +41,7 @@ class Arena
     Rabbit* m_rabbits[MAXRABBITS];
     int     m_nRabbits;
     int     m_turns;
-    History m_his;
+    History* m_his;
 
       // Helper functions
     void checkPos(int r, int c, string functionName) const;

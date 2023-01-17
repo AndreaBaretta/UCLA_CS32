@@ -9,7 +9,7 @@
 //  Arena implementation
 ///////////////////////////////////////////////////////////////////////////
 
-Arena::Arena(int nRows, int nCols) : m_his(History(nRows, nCols))
+Arena::Arena(int nRows, int nCols) : m_his(new History(nRows, nCols))
 {
     if (nRows <= 0  ||  nCols <= 0  ||  nRows > MAXROWS  ||  nCols > MAXCOLS)
     {
@@ -32,6 +32,7 @@ Arena::~Arena()
     for (int k = 0; k < m_nRabbits; k++)
         delete m_rabbits[k];
     delete m_player;
+    delete m_his;
 }
 
 int Arena::rows() const
@@ -196,7 +197,7 @@ void Arena::moveRabbits()
 }
 
 History& Arena::history() {
-    return m_his;
+    return *m_his;
 }
 
 bool Arena::isPosInBounds(int r, int c) const
