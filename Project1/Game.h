@@ -2,7 +2,8 @@
 #define GAME_HEADER
 
 #include <string>
-#include "Arena.h"
+
+class Arena;
 
 using namespace std;
 

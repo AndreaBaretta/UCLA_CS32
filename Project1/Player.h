@@ -2,7 +2,6 @@
 #define PLAYER_HEADER
 
 #include <string>
-#include "Arena.h"
 
 using namespace std;
 

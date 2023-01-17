@@ -2,8 +2,8 @@
 #define ARENA_HEADER
 
 #include <string>
-#include "Player.h"
-#include "Rabbit.h"
+// #include "Player.h"
+// #include "Rabbit.h"
 #include "History.h"
 #include "globals.h"
 
@@ -11,6 +11,7 @@ using namespace std;
 
 class Player;
 class Rabbit;
+class History;
 
 class Arena
 {
