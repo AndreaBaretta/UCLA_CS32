@@ -5,7 +5,7 @@
 Set::Set() : m_size(0) {}
 
 bool Set::empty() const {
-    return m_size != 0;
+    return m_size == 0;
 }
 
 int Set::size() const {
@@ -25,6 +25,7 @@ bool Set::insert(const ItemType& value) {
     if (contains(value)) { return false; }
     m_items[m_size] = value;
     std::sort(m_items, m_items + m_size);
+    ++m_size;
     return true;
 }
 
@@ -62,9 +63,9 @@ void Set::swap(Set& other) {
 }
 
 void Set::dump() const {
-    std::cout << "[";
+    std::cerr << "[";
     for (int i = 0; i < m_size; ++i) {
-        std::cout << m_items[i] << ",";
+        std::cerr << m_items[i] << ",";
     }
-    std::cout << "]" << std::endl;
+    std::cerr << "]" << std::endl;
 }
