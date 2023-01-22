@@ -1,8 +1,14 @@
-#include "Set.h"
+#include "newSet.h"
 #include <algorithm>
 #include <iostream>
 
-Set::Set() : m_size(0) {}
+Set::Set() : m_size(0), m_max_size(DEFAULT_MAX_ITEMS), m_items(new ItemType[DEFAULT_MAX_ITEMS]) {}
+
+Set::Set(int size) : m_size(0), m_max_size(size), m_items(new ItemType[size]) {}
+
+Set::~Set() {
+    delete[] m_items;
+}
 
 bool Set::empty() const {
     return m_size == 0;
@@ -22,7 +28,7 @@ bool Set::contains(const ItemType& value) const {
 }
 
 bool Set::insert(const ItemType& value) {
-    if (contains(value) || m_size == DEFAULT_MAX_ITEMS) { return false; }
+    if (contains(value) || m_size == m_max_size) { return false; }
     m_items[m_size] = value;
     ++m_size;
     std::sort(m_items, m_items + m_size);
@@ -51,18 +57,17 @@ bool Set::get(int i, ItemType& value) const {
 }
 
 void Set::swap(Set& other) {
-    int iter = std::max(m_size, other.m_size);
-    ItemType item1;
-    ItemType item2;
-    for (int i = 0; i < iter; ++i) {
-        item1 = m_items[i];
-        item2 = other.m_items[i];
-        m_items[i] = item2;
-        other.m_items[i] = item1;
-    }
-    int this_size = m_size;
-    m_size = other.m_size;
-    other.m_size = this_size;
+    int other_m_size = other.m_size;
+    const int other_m_max_size = other.m_max_size;
+    ItemType* other_m_items = other.m_items;
+
+    other.m_size = m_size;
+    other.m_max_size = m_max_size;
+    other.m_items = m_items;
+
+    m_size = other_m_size;
+    m_max_size = other_m_max_size;
+    m_items = other_m_items;
 }
 
 void Set::dump() const {

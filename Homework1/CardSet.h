@@ -1,3 +1,6 @@
+#ifndef CARDSET_HEADER
+#define CARDSET_HEADER
+
 #include "Set.h"
 
 class CardSet {
@@ -20,3 +23,5 @@ class CardSet {
   private:
     // Some of your code goes here.
 };
+
+#endif

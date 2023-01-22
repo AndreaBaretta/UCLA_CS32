@@ -1,5 +1,5 @@
-#ifndef SET_HEADER
-#define SET_HEADER
+#ifndef NEWSET_HEADER
+#define NEWSET_HEADER
 
 #include <string>
 
@@ -10,10 +10,14 @@ const int DEFAULT_MAX_ITEMS = 160;
 class Set {
   private:
     int m_size;
-    ItemType m_items[DEFAULT_MAX_ITEMS];
+    int m_max_size;
+    ItemType* m_items;
 
   public:
-    Set();         // Create an empty set (i.e., one whose size() is 0).
+    Set();
+    Set(int size);         // Create an empty set (i.e., one whose size() is 0).
+
+    ~Set();
 
     bool empty() const;  // Return true if the set is empty, otherwise false.
 
