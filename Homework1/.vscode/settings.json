@@ -1,0 +1,14 @@
+{
+    "editor.detectIndentation": false,
+    "editor.tabSize": 4,
+    "files.trimTrailingWhitespace": true,
+    "cmake.buildDirectory": "${workspaceFolder}/builds/${buildKit}/${buildType}",
+    "cmake.parallelJobs": 3,
+    "cmake.buildToolArgs": [
+        "-k"
+    ],
+    "cmake.generator": "Unix Makefiles",
+    "files.associations": {
+      "string": "cpp"
+    }
+}
