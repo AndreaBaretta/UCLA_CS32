@@ -24,8 +24,8 @@ bool Set::contains(const ItemType& value) const {
 bool Set::insert(const ItemType& value) {
     if (contains(value)) { return false; }
     m_items[m_size] = value;
-    std::sort(m_items, m_items + m_size);
     ++m_size;
+    std::sort(m_items, m_items + m_size);
     return true;
 }
 
@@ -60,6 +60,9 @@ void Set::swap(Set& other) {
         m_items[i] = item2;
         other.m_items[i] = item1;
     }
+    int this_size = m_size;
+    m_size = other.m_size;
+    other.m_size = this_size;
 }
 
 void Set::dump() const {
