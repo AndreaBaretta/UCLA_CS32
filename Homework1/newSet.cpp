@@ -2,9 +2,7 @@
 #include <algorithm>
 #include <iostream>
 
-Set::Set() : m_size(0), m_max_size(DEFAULT_MAX_ITEMS), m_items(new ItemType[DEFAULT_MAX_ITEMS]) {}
-
-Set::Set(int size) : m_size(0), m_max_size(size), m_items(new ItemType[size]) {
+Set::Set(int size = DEFAULT_MAX_ITEMS) : m_size(0), m_max_size(size), m_items(new ItemType[size]) {
     if (size < 0) {
         delete[] m_items;
         exit(1);

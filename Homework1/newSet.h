@@ -14,8 +14,7 @@ class Set {
     ItemType* m_items;
 
   public:
-    Set();
-    Set(int size);         // Create an empty set (i.e., one whose size() is 0).
+    Set(int size = DEFAULT_MAX_ITEMS);         // Create an empty set (i.e., one whose size() is 0).
     Set(const Set& other);
     Set& operator=(const Set& other);
 
