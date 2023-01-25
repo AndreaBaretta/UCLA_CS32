@@ -16,7 +16,7 @@ Set::Set(const Set& other) : m_size(other.m_size), m_max_size(other.m_max_size),
 
 Set& Set::operator=(const Set& other) {
     m_items = other.m_items;
-    m_max_size = m_max_size;
+    m_max_size = other.m_max_size;
     delete[] m_items;
     m_items = new ItemType[other.m_max_size];
     for (int i = 0; i < m_size; ++i) {
