@@ -23,9 +23,27 @@ bool Set::contains(const ItemType& value) const {
 
 bool Set::insert(const ItemType& value) {
     if (contains(value) || m_size == DEFAULT_MAX_ITEMS) { return false; }
-    m_items[m_size] = value;
-    ++m_size;
-    std::sort(m_items, m_items + m_size);
+
+    int i;
+    for (i = 0; i < m_size; ++i) {
+        if (value < m_items[i]) {
+            break;
+        }
+    }
+    if (i == m_size) {
+        m_items[i] = ItemType(value);
+        ++m_size;
+    } else {
+        ItemType tmp1 = value; //cur
+        ItemType tmp2 = m_items[i]; //next
+        for (; i < m_size; ++i) {
+            tmp2 = m_items[i];
+            m_items[i] = tmp1;
+            tmp1 = tmp2;
+        }
+        m_items[i] = tmp1;
+        ++m_size;
+    }
     return true;
 }
 
