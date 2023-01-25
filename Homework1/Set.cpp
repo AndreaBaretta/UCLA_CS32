@@ -1,5 +1,4 @@
 #include "Set.h"
-#include <algorithm>
 #include <iostream>
 
 Set::Set() : m_size(0) {}

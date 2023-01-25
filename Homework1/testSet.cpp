@@ -16,6 +16,7 @@ int main()
     Set d;
     d.insert("cccc");
     d.insert("bbbb");
+    d.insert("dddd");
     d.dump();
 
     d.swap(s);

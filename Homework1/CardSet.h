@@ -19,9 +19,6 @@ class CardSet {
     void print() const;
         // Write to cout every card number in the CardSet exactly once, one
         // per line.  Write no other text.
-
-  private:
-    // Some of your code goes here.
 };
 
 #endif

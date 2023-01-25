@@ -47,7 +47,7 @@ bool Set::contains(const ItemType& value) const {
 }
 
 bool Set::insert(const ItemType& value) {
-    if (contains(value) || m_size == m_max_size) { return false; }
+    if (contains(value) || m_size == m_max_size || m_max_size == 0) { return false; }
 
     int i;
     for (i = 0; i < m_size; ++i) {
