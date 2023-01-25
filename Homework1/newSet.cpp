@@ -1,12 +1,11 @@
 #include "newSet.h"
-#include <algorithm>
 #include <iostream>
 
-Set::Set(int size = DEFAULT_MAX_ITEMS) : m_size(0), m_max_size(size), m_items(new ItemType[size]) {
+Set::Set(int size = DEFAULT_MAX_ITEMS) : m_size(0), m_max_size(size) {
     if (size < 0) {
-        delete[] m_items;
         exit(1);
     }
+    m_items = new ItemType[size];
 }
 
 Set::Set(const Set& other) : m_size(other.m_size), m_max_size(other.m_max_size), m_items(new ItemType[other.m_max_size]) {
