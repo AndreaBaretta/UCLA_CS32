@@ -3,7 +3,7 @@
 
 #include <string>
 
-using ItemType = unsigned long;
+using ItemType = std::string;
 
 const int DEFAULT_MAX_ITEMS = 160;
 

@@ -51,18 +51,9 @@ bool Set::get(int i, ItemType& value) const {
 }
 
 void Set::swap(Set& other) {
-    int iter = std::max(m_size, other.m_size);
-    ItemType item1;
-    ItemType item2;
-    for (int i = 0; i < iter; ++i) {
-        item1 = m_items[i];
-        item2 = other.m_items[i];
-        m_items[i] = item2;
-        other.m_items[i] = item1;
-    }
-    int this_size = m_size;
-    m_size = other.m_size;
-    other.m_size = this_size;
+    const Set tmp = other;
+    other = *this;
+    *this = tmp;
 }
 
 void Set::dump() const {

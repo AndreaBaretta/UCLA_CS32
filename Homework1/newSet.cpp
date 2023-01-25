@@ -4,7 +4,29 @@
 
 Set::Set() : m_size(0), m_max_size(DEFAULT_MAX_ITEMS), m_items(new ItemType[DEFAULT_MAX_ITEMS]) {}
 
-Set::Set(int size) : m_size(0), m_max_size(size), m_items(new ItemType[size]) {}
+Set::Set(int size) : m_size(0), m_max_size(size), m_items(new ItemType[size]) {
+    if (size < 0) {
+        delete[] m_items;
+        exit(1);
+    }
+}
+
+Set::Set(const Set& other) : m_size(other.m_size), m_max_size(other.m_max_size), m_items(new ItemType[other.m_max_size]) {
+    for (int i = 0; i < m_size; ++i) {
+        m_items[i] = other.m_items[i];
+    }
+}
+
+Set& Set::operator=(const Set& other) {
+    m_items = other.m_items;
+    m_max_size = m_max_size;
+    delete[] m_items;
+    m_items = new ItemType[other.m_max_size];
+    for (int i = 0; i < m_size; ++i) {
+        m_items[i] = other.m_items[i];
+    }
+    return *this;
+}
 
 Set::~Set() {
     delete[] m_items;
@@ -57,17 +79,18 @@ bool Set::get(int i, ItemType& value) const {
 }
 
 void Set::swap(Set& other) {
-    int other_m_size = other.m_size;
-    const int other_m_max_size = other.m_max_size;
-    ItemType* other_m_items = other.m_items;
+    // int other_m_size = other.m_size;
+    // const int other_m_max_size = other.m_max_size;
+    // ItemType* other_m_items = other.m_items;
 
-    other.m_size = m_size;
-    other.m_max_size = m_max_size;
-    other.m_items = m_items;
+    // other.m_size = m_size;
+    // other.m_max_size = m_max_size;
+    // other.m_items = m_items;
 
-    m_size = other_m_size;
-    m_max_size = other_m_max_size;
-    m_items = other_m_items;
+    // m_size = other_m_size;
+    // m_max_size = other_m_max_size;
+    // m_items = other_m_items;
+
 }
 
 void Set::dump() const {
