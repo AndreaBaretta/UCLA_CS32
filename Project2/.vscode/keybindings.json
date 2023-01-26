@@ -1,0 +1,12 @@
+{
+  "key": "ctrl+/",                     // whatever you want
+  "command": "extension.multiCommand.execute",
+  "args": {
+    "sequence": [
+      "editor.action.commentLine",     // for line comments
+      "editor.action.cursorDown"
+      // "cursorDown"
+    ]
+  },
+  "when": "editorTextFocus"
+}
