@@ -151,3 +151,27 @@ void Set::dump() const {
     }
     std::cerr << "]" << std::endl;
 }
+
+void unite(const Set& s1, const Set& s2, Set& result) {
+    Set s = Set();
+    ItemType item;
+    for (int i = 0; i < s1.size(); ++i) {
+        s1.get(i, item);
+        s.insert(item);
+    }
+    for (int i = 0; i < s2.size(); ++i) {
+        s2.get(i, item);
+        s.insert(item);
+    }
+    result.swap(s);
+}
+
+void butNot(const Set& s1, const Set& s2, Set& result) {
+    Set s = Set();
+    ItemType item;
+    for (int i = 0; i < s1.size(); ++i) {
+        s1.get(i, item);
+        if (!s2.contains(item)) { s.insert(item); }
+    }
+    result.swap(s);
+}

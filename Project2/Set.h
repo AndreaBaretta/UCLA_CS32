@@ -31,4 +31,8 @@ class Set {
     void dump() const; // TODO: REMOVE BOYO
 };
 
+void unite(const Set& s1, const Set& s2, Set& result);
+
+void butNot(const Set& s1, const Set& s2, Set& result);
+
 #endif
