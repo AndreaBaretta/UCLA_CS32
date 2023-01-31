@@ -2,36 +2,37 @@
 #include <cassert>
 #include <iostream>
 
-Set::Set() : m_head(nullptr), m_size(0) {}
+Set::Set() : m_head(nullptr), m_size(0) {} // Default constructor
 
 Set::Set(const Set& other) : m_head(nullptr), m_size(other.m_size) {
-    if (m_size == 0) { return; } // Edge case: first one
-    NodeType* p = nullptr;
-    NodeType* other_p = other.m_head;
-    p = new NodeType{.item=other_p->item, .next=nullptr, .prev=nullptr};
-    m_head = p;
-    if (m_size == 1) { return; } // Assuming there's more
+    if (m_size == 0) { return; } // Edge case: size of other is 0
+    NodeType* p = nullptr;              // The pointer belonging to this object
+    NodeType* other_p = other.m_head;   // The pointer belonging to other
+    p = new NodeType{.item=other_p->item, .next=nullptr, .prev=nullptr}; // Create head
+    m_head = p; // Set the head to the first created element
+    if (m_size == 1) { return; } // Assuming there's items than just the head
     other_p = other_p->next;
-    for (; other_p != nullptr; other_p = other_p->next) { // Go ahead with the normal routine
-        p->next = new NodeType{.item=other_p->item, .next=nullptr, .prev=p};
+    for (; other_p != nullptr; other_p = other_p->next) { // Cycle through. All the items should be in order already
+        p->next = new NodeType{.item=other_p->item, .next=nullptr, .prev=p}; // Create new node based on data in corresponding node in other
         p = p->next;
     }
 }
 
 Set::~Set() {
-    if (empty()) { return; }
+    if (empty()) { return; } // Edge case: set is empty
     NodeType* p = m_head;
-    while (p->next != nullptr) {
+    while (p->next != nullptr) { // Cycle through, delete all nodes before to p
         p = p->next;
         delete p->prev;
     }
-    delete p;
+    delete p; // Last node to be deleted: the tail
 }
 
 Set& Set::operator=(const Set& rhs) {
-    Set tmp = Set(rhs);
-    this->swap(tmp);
+    Set tmp = Set(rhs); // Create copy of rhs
+    this->swap(tmp); // Use swap to handle switching with rhs
     return *this;
+    // As soon as tmp goes out of scope, destructor gets called, cleaning up memory that used to belong to *this
 }
 
 bool Set::empty() const {
@@ -43,7 +44,7 @@ int Set::size() const {
 }
 
 bool Set::insert(const ItemType& value) {
-    if (empty()) {
+    if (empty()) { // Edge case
         m_head = new NodeType{.item=ItemType(value), .next=nullptr, .prev=nullptr};
         ++m_size;
         return true;
@@ -88,8 +89,8 @@ bool Set::erase(const ItemType& value) {
         if (p->next != nullptr) {
             p->next->prev = nullptr;
         }
-        delete m_head;
         m_head = p->next;
+        delete p;
         --m_size;
         return true;
     }
@@ -104,7 +105,7 @@ bool Set::erase(const ItemType& value) {
         p = p->next;
     }
     if (p->item == value) { // Deleting tail
-        p->prev = nullptr;
+        p->prev->next = nullptr;
         delete p;
         --m_size;
         return true;
@@ -123,7 +124,7 @@ bool Set::contains(const ItemType& value) const {
 }
 
 bool Set::get(int pos, ItemType& value) const {
-    if (pos >= m_size) { return false; }
+    if (pos >= m_size || pos < 0) { return false; }
     NodeType* p = m_head;
     for (int i = 1; i <= pos; ++i) {
         p = p->next;
@@ -133,23 +134,23 @@ bool Set::get(int pos, ItemType& value) const {
 }
 
 void Set::swap(Set& other) {
-    unsigned int other_size = other.m_size;
-    other.m_size = m_size;
-    m_size = other_size;
-
     NodeType* other_head = other.m_head;
     other.m_head = m_head;
     m_head = other_head;
+
+    size_t other_size = other.m_size;
+    other.m_size = m_size;
+    m_size = other_size;
 }
 
 void Set::dump() const {
     int i = 0;
     ItemType item;
-    std::cerr << "[";
+    std::cerr << "{";
     while (get(i++, item)) {
         std::cerr << item << ",";
     }
-    std::cerr << "]" << std::endl;
+    std::cerr << "}" << std::endl;
 }
 
 void unite(const Set& s1, const Set& s2, Set& result) {

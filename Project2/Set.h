@@ -14,7 +14,7 @@ class Set {
     };
 
     NodeType* m_head;
-    unsigned int m_size;
+    int m_size;
 
   public:
     Set();
