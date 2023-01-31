@@ -4,13 +4,13 @@
 
 /**
  * Default constructor.
-*/
+ */
 Set::Set() : m_head(nullptr), m_size(0) {} // Default constructor
 
 
 /**
  * Copy constructor. Takes a const reference and copies dynamically allocated memory.
-*/
+ */
 Set::Set(const Set& other) : m_head(nullptr), m_size(other.m_size) {
     if (m_size == 0) { return; } // Edge case: size of other is 0
     NodeType* p = nullptr;              // The pointer belonging to this object
@@ -28,7 +28,7 @@ Set::Set(const Set& other) : m_head(nullptr), m_size(other.m_size) {
 
 /**
  * Destructor. Frees memory of all nodes.
-*/
+ */
 Set::~Set() {
     if (empty()) { return; } // Edge case: set is empty
     NodeType* p = m_head;
@@ -41,7 +41,7 @@ Set::~Set() {
 
 /**
  * Copy assignment operator. Uses copy constructor to copy rhs.
-*/
+ */
 Set& Set::operator=(const Set& rhs) {
     Set tmp = Set(rhs); // Create copy of rhs
     this->swap(tmp); // Use swap to handle switching with rhs
@@ -52,14 +52,14 @@ Set& Set::operator=(const Set& rhs) {
 
 /**
  * Returns if set is empty
-*/
+ */
 bool Set::empty() const {
     return m_size == 0;
 }
 
 /**
  * Returns size of set.
-*/
+ */
 int Set::size() const {
     return m_size;
 }
@@ -67,7 +67,7 @@ int Set::size() const {
 /**
  * Inserts new items into linked list. If value already exists, returns false. If value does not, then it is copied into a new node in the linked list.
  * Items are ordered from least to greatest
-*/
+ */
 bool Set::insert(const ItemType& value) {
     if (empty()) { // Edge case: set is empty
         m_head = new NodeType{.item=ItemType(value), .next=nullptr, .prev=nullptr};
@@ -112,7 +112,7 @@ bool Set::insert(const ItemType& value) {
 
 /**
  * Removes Node matching value from the list, and free corresponding memory. Returns true if successful, false if value does not exist in set
-*/
+ */
 bool Set::erase(const ItemType& value) {
     if (empty()) { return false; } // Edge case: set is empty
     NodeType* p = m_head;
@@ -146,7 +146,7 @@ bool Set::erase(const ItemType& value) {
 
 /**
  * Returns true if set contains node with value, false if not
-*/
+ */
 bool Set::contains(const ItemType& value) const {
     if (empty()) { return false; } // Edge case: set is empty
     NodeType* p = m_head;
@@ -154,29 +154,38 @@ bool Set::contains(const ItemType& value) const {
         if (p->item == value) { return true; } // If we've found value: return true
         p = p->next;
     }
-    return p->item == value; // The last possible element that could contain value is
+    return p->item == value; // The last possible element that could contain value is the tail
 }
 
+/**
+ * Copies the value of the node at index pos into value. Returns true if node exists at given index, false if not
+ */
 bool Set::get(int pos, ItemType& value) const {
-    if (pos >= m_size || pos < 0) { return false; }
+    if (pos >= m_size || pos < 0) { return false; } // Edge cases: index does not exist, or negative value for pos
     NodeType* p = m_head;
-    for (int i = 1; i <= pos; ++i) {
+    for (int i = 1; i <= pos; ++i) { // Iterate to given index
         p = p->next;
     }
-    value = ItemType(p->item);
-    return true;
+    value = ItemType(p->item); // Make copy
+    return true; // Return
 }
 
+/**
+ * Swap contents of two Set objects
+ */
 void Set::swap(Set& other) {
-    NodeType* other_head = other.m_head;
-    other.m_head = m_head;
-    m_head = other_head;
+    NodeType* other_head = other.m_head; // Create copy of other's head
+    other.m_head = m_head; // Set other's head to this's head
+    m_head = other_head; // Set this's head to copy of other's
 
-    size_t other_size = other.m_size;
-    other.m_size = m_size;
-    m_size = other_size;
+    size_t other_size = other.m_size; // Create copy of other's size
+    other.m_size = m_size; // Set other's size to this's size
+    m_size = other_size; // Set this's size to copy of other's
 }
 
+/**
+ * Cycle through and print to cerr contents of set
+ */
 void Set::dump() const {
     int i = 0;
     ItemType item;
@@ -187,26 +196,32 @@ void Set::dump() const {
     std::cerr << "}" << std::endl;
 }
 
+/**
+ * Sets result to the union of s1 and s2
+ */
 void unite(const Set& s1, const Set& s2, Set& result) {
     Set s = Set();
     ItemType item;
-    for (int i = 0; i < s1.size(); ++i) {
+    for (int i = 0; i < s1.size(); ++i) { // Insert all elements of s1 into s
         s1.get(i, item);
         s.insert(item);
     }
-    for (int i = 0; i < s2.size(); ++i) {
+    for (int i = 0; i < s2.size(); ++i) { // Insert all elements of s2 into s
         s2.get(i, item);
         s.insert(item);
     }
-    result.swap(s);
+    result.swap(s); // Swap s into result
 }
 
+/**
+ * Stores into result s1 \ s2, which is the set consisting of elements in s1 and not in s2
+ */
 void butNot(const Set& s1, const Set& s2, Set& result) {
     Set s = Set();
     ItemType item;
-    for (int i = 0; i < s1.size(); ++i) {
+    for (int i = 0; i < s1.size(); ++i) { // Iterate through all elements in s1
         s1.get(i, item);
-        if (!s2.contains(item)) { s.insert(item); }
+        if (!s2.contains(item)) { s.insert(item); } // If not in s2, insert into s
     }
-    result.swap(s);
+    result.swap(s); // Swap s into result
 }
