@@ -63,7 +63,7 @@ int main() {
 
     string maze2[10] = {
         "XXXXX",
-        "X.x.X",
+        "X.X.X",
         "XXXXX"
     };
     cout << pathExists(maze2, 3,5, 1,1, 1,3) << endl;
