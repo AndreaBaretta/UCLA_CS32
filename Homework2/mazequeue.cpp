@@ -41,7 +41,7 @@ bool pathExists(string maze[],
     return false;
 }
 
-int main() {
+int test_routine() {
     string maze[10] = {
         "XXXXXXXXXX",
         "X..X...X.X",
@@ -60,11 +60,4 @@ int main() {
     } else {
         cout << "Out of luck!" << endl;
     }
-
-    string maze2[10] = {
-        "XXXXX",
-        "X.x.X",
-        "XXXXX"
-    };
-    cout << pathExists(maze2, 3,5, 1,1, 1,3) << endl;
 }
