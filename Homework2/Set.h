@@ -1,13 +1,13 @@
 #ifndef SET_INCLUDED
 #define SET_INCLUDED
 
-#include <string>
+// #include <string>
 
   // Later in the course, we'll see that templates provide a much nicer
   // way of enabling us to have Sets of different types.  For now,
   // we'll use a type alias.
 
-using ItemType = std::string;
+using ItemType = char;
 
 class Set
 {

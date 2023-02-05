@@ -31,7 +31,7 @@ bool pathExists(string maze[],
         Coord coord = coords.front();
         coords.pop();
         int r = coord.r(), c = coord.c();
-        cerr << "Explored coord: (" << r << "," << c << ")" << endl;
+        // cerr << "Explored coord: (" << r << "," << c << ")" << endl;
         if (r == er && c == ec) { return true; }
         if (maze[r][c+1] != '0' && maze[r][c+1] != 'X') { coords.emplace(r, c+1); maze[r][c+1] = '0'; }
         if (maze[r-1][c] != '0' && maze[r-1][c] != 'X') { coords.emplace(r-1, c); maze[r-1][c] = '0'; }
