@@ -4,17 +4,6 @@
 
 using namespace std;
 
-class Coord {
-   public:
-    Coord(int r, int c) : m_row(r), m_col(c) {}
-    int r() const { return m_row; }
-    int c() const { return m_col; }
-
-   private:
-    int m_row;
-    int m_col;
-};
-
 // Return true if there is a path from (sr,sc) to (er,ec)
 // through the maze; return false otherwise
 bool pathExists(string maze[],
@@ -49,7 +38,7 @@ bool pathExists(string maze[],
 //                         then return true.
 // Return false.
 
-int main() {
+int test_routine() {
     string maze[10] = {
         "XXXXXXXXXX",
         "X..X...X.X",
