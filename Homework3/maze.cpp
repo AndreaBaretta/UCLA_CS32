@@ -1,8 +1,8 @@
-#include <iostream>
-#include <string>
-#include <stack>
+// #include <iostream>
+// #include <string>
+// #include <stack>
 
-using namespace std;
+// using namespace std;
 
 // Return true if there is a path from (sr,sc) to (er,ec)
 // through the maze; return false otherwise
@@ -38,23 +38,23 @@ bool pathExists(string maze[],
 //                         then return true.
 // Return false.
 
-int test_routine() {
-    string maze[10] = {
-        "XXXXXXXXXX",
-        "X..X...X.X",
-        "X.XXXX.X.X",
-        "X.X.X..X.X",
-        "X...X.XX.X",
-        "XXX......X",
-        "X.X.XXXX.X",
-        "X.XXX....X",
-        "X...X..X.X",
-        "XXXXXXXXXX"
-    };
+// int test_routine() {
+//     string maze[10] = {
+//         "XXXXXXXXXX",
+//         "X..X...X.X",
+//         "X.XXXX.X.X",
+//         "X.X.X..X.X",
+//         "X...X.XX.X",
+//         "XXX......X",
+//         "X.X.XXXX.X",
+//         "X.XXX....X",
+//         "X...X..X.X",
+//         "XXXXXXXXXX"
+//     };
 
-    if (pathExists(maze, 10,10, 5,3, 8,8)) {
-        cerr << "Solvable!" << endl;
-    } else {
-        cerr << "Out of luck!" << endl;
-    }
-}
+//     if (pathExists(maze, 10,10, 5,3, 8,8)) {
+//         cerr << "Solvable!" << endl;
+//     } else {
+//         cerr << "Out of luck!" << endl;
+//     }
+// }

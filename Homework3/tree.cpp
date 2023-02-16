@@ -1,5 +1,12 @@
-#include <iostream>
-#include <cassert>
+// #include <iostream>
+// #include <cassert>
+
+// int double_comparisons = 0;
+
+// int factorial(int n) {
+//     if (n <= 0) return 1;
+//     return n*factorial(n-1);
+// }
 
 // Return the number of ways that all n1 elements of a1 appear in
 // the n2 element array a2 in the same order (though not necessarily
@@ -13,21 +20,21 @@
 //	20 10 40                        0
 //	50 40 30                        3
 int countIsIn(const double a1[], int n1, const double a2[], int n2) {
-    if (n2 < n1 || n1 <= 0 || n2 <= 0) {
+    if (n1 <= 0) {
+        return 1;
+    }
+    if (n2 < n1 || n2 <= 0) {
         return 0;
     }
     if (a1[n1 - 1] == a2[n2 - 1]) {
         if (n1 == 1) {  // This be the end of de line, matey
             return 1 + countIsIn(a1, n1, a2, n2 - 1);
         } else {  // Else, try for MORE
-            return countIsIn(a1, n1 - 1, a2,
-                             n2 - 1)  // Using this particular ordering
-                   +
-                   countIsIn(a1, n1, a2,
-                             n2 - 1);  // In case there's any more subsequences
+            return countIsIn(a1, n1 - 1, a2, n2 - 1) +  // Using this particular ordering
+                   + countIsIn(a1, n1, a2, n2 - 1);  // In case there's any more subsequences
         }
     }
-    return countIsIn(a1, n1, a2, n2 - 1);
+    return countIsIn(a1, n1, a2, n2 - 1); // Keep searching
 }
 
 // Exchange two doubles
@@ -104,38 +111,39 @@ void order(double a[], int n) {
     }
 }
 
-bool isOrdered(double a[]) {
-    return sizeof(a) / sizeof(decltype(a[0]));
-}
+// bool isOrdered(double a[], int n) {
+//     if (n <= 1) { return true; }
+//     return (a[n-2] >= a[n-1]) || isOrdered(a, n-1);
+// }
 
-bool isOrdered(double a[], int n) {
-    if (n <= 1) { return true; }
-    return (a[n-2] >= a[n-1]) || isOrdered(a, n-1);
-}
-
-int main() {
-    {
-        double a2[] = {10, 50, 40, 20, 50, 40, 30};
-        double a1_1[] = {10, 20, 40};
-        double a1_2[] = {10, 40, 30};
-        double a1_3[] = {10, 10, 40};
-        double a1_4[] = {50, 40, 30};
-        std::cout << "a1_1: " << countIsIn(a1_1, 3, a2, 7) << std::endl;
-        std::cout << "a1_2: " << countIsIn(a1_2, 3, a2, 7) << std::endl;
-        std::cout << "a1_3: " << countIsIn(a1_3, 3, a2, 7) << std::endl;
-        std::cout << "a1_4: " << countIsIn(a1_4, 3, a2, 7) << std::endl;
-        assert(countIsIn(a1_1, 3, a2, 7) == 1);
-        assert(countIsIn(a1_2, 3, a2, 7) == 2);
-        assert(countIsIn(a1_3, 3, a2, 7) == 0);
-        assert(countIsIn(a1_4, 3, a2, 7) == 3);
-    }
-    {
-        double a2[] = {10, 50, 40, 20, 50, 40, 30};
-        order(a2, 7);
-        for (const double a : a2) {
-            std::cout << a << ",";
-        }
-        std::cout << std::endl;
-        assert(isOrdered(a2));
-    }
-}
+// int main() {
+//     {
+//         double a2[] = {10, 50, 40, 20, 50, 40, 30};
+//         double a1_1[] = {10, 20, 40};
+//         double a1_2[] = {10, 40, 30};
+//         double a1_3[] = {10, 10, 40};
+//         double a1_4[] = {50, 40, 30};
+//         std::cout << "Max comps: " << (factorial(7+1) / (factorial(3)*factorial(7+1-3))) << std::endl;
+//         std::cout << "a1_1: " << countIsIn(a1_1, 3, a2, 7) << " comparisons: " << double_comparisons << std::endl;
+//         double_comparisons = 0;
+//         std::cout << "a1_2: " << countIsIn(a1_2, 3, a2, 7) << " comparisons: " << double_comparisons << std::endl;
+//         double_comparisons = 0;
+//         std::cout << "a1_3: " << countIsIn(a1_3, 3, a2, 7) << " comparisons: " << double_comparisons << std::endl;
+//         double_comparisons = 0;
+//         std::cout << "a1_4: " << countIsIn(a1_4, 3, a2, 7) << " comparisons: " << double_comparisons << std::endl;
+//         double_comparisons = 0;
+//         assert(countIsIn(a1_1, 3, a2, 7) == 1);
+//         assert(countIsIn(a1_2, 3, a2, 7) == 2);
+//         assert(countIsIn(a1_3, 3, a2, 7) == 0);
+//         assert(countIsIn(a1_4, 3, a2, 7) == 3);
+//     }
+//     {
+//         double a2[] = {10, 50, 40, 20, 50, 40, 30};
+//         order(a2, 7);
+//         for (const double a : a2) {
+//             std::cout << a << ",";
+//         }
+//         std::cout << std::endl;
+//         assert(isOrdered(a2, 7));
+//     }
+// }

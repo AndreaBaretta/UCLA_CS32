@@ -1,12 +1,11 @@
-#include <cmath>
-#include <cassert>
-#include <iostream>
+// #include <cassert>
+// #include <iostream>
 
-bool somePredicate(double x) {
-    // return std::sin(std::exp(x)) >
-    //        std::cos(x);  // include <cmath> for std::sin, etc.
-    return x >= 10;
-}
+// bool somePredicate(double x) {
+//     // return std::sin(std::exp(x)) >
+//     //        std::cos(x);  // include <cmath> for std::sin, etc.
+//     return x >= 10;
+// }
 
 // Return true if the somePredicate function returns true for at
 // least one of the array elements; return false otherwise.
@@ -77,11 +76,10 @@ int indexOfMinimum(const double a[], int n) {
 // or
 //    10 20 20
 bool isIn(const double a1[], int n1, const double a2[], int n2) {
-    if (n1 == 0) {
+    if (n1 <= 0) {
         return true;
     }
-
-    if (n1 > n2 || n2 == 0) {
+    if (n1 > n2 || n2 <= 0) {
         return false;
     }
 
@@ -92,58 +90,61 @@ bool isIn(const double a1[], int n1, const double a2[], int n2) {
     }
 }
 
-int main() {
-    {
-        double x[] = {1,3,5,6,10,3,5};
-        assert(anyTrue(x, 7));
-        assert(anyTrue(x, 5));
-        assert(!anyTrue(x, 4));
-        assert(!anyTrue(x, 1));
-        assert(!anyTrue(x, 0));
-    }
-    {
-        double x[] = {10,3,5,6,10,3,15,3,5};
-        assert(countTrue(x, 9) == 3);
-        assert(countTrue(x, 7) == 3);
-        assert(countTrue(x, 6) == 2);
-        assert(countTrue(x, 5) == 2);
-        assert(countTrue(x, 4) == 1);
-        assert(countTrue(x, 1) == 1);
-        assert(countTrue(x, 0) == 0);
-    }
-    {
-        double x[] = {1,10,3,5,6,10,3,15,3,5};
-        assert(firstTrue(x, 10) == 1);
-        assert(firstTrue(x, 8) == 1);
-        assert(firstTrue(x, 7) == 1);
-        assert(firstTrue(x, 6) == 1);
-        assert(firstTrue(x, 5) == 1);
-        assert(firstTrue(x, 2) == 1);
-        assert(firstTrue(x, 1) == -1);
-        assert(firstTrue(x, 0) == -1);
-    }
-    {
-        double x[] = {4,10,7,5,3,10,3,15,1,5};
-        assert(indexOfMinimum(x, 10) == 8);
-        assert(indexOfMinimum(x, 8) == 4);
-        assert(indexOfMinimum(x, 7) == 4);
-        assert(indexOfMinimum(x, 6) == 4);
-        assert(indexOfMinimum(x, 5) == 4);
-        assert(indexOfMinimum(x, 4) == 0);
-        assert(indexOfMinimum(x, 2) == 0);
-        assert(indexOfMinimum(x, 1) == 0);
-        assert(indexOfMinimum(x, 0) == -1);
-    }
-    {
-        double a2[] = {10,50,40,20,50,40,30};
-        double a1_1[] = {50,20,30};
-        double a1_2[] = {50,40,40};
-        double a1_3[] = {50,30,20};
-        double a1_4[] = {10,20,20};
-        assert(isIn(a1_1, 3, a2, 7));
-        assert(isIn(a1_2, 3, a2, 7));
-        assert(!isIn(a1_3, 3, a2, 7));
-        assert(!isIn(a1_4, 3, a2, 7));
-    }
-    std::cout << "Tests passed!" << std::endl;
-}
+// int main() {
+//     {
+//         double x[] = {1,3,5,6,10,3,5};
+//         assert(anyTrue(x, 7));
+//         assert(anyTrue(x, 5));
+//         assert(!anyTrue(x, 4));
+//         assert(!anyTrue(x, 1));
+//         assert(!anyTrue(x, 0));
+//     }
+//     {
+//         double x[] = {10,3,5,6,10,3,15,3,5};
+//         assert(countTrue(x, 9) == 3);
+//         assert(countTrue(x, 7) == 3);
+//         assert(countTrue(x, 6) == 2);
+//         assert(countTrue(x, 5) == 2);
+//         assert(countTrue(x, 4) == 1);
+//         assert(countTrue(x, 1) == 1);
+//         assert(countTrue(x, 0) == 0);
+//     }
+//     {
+//         double x[] = {1,10,3,5,6,10,3,15,3,5};
+//         assert(firstTrue(x, 10) == 1);
+//         assert(firstTrue(x, 8) == 1);
+//         assert(firstTrue(x, 7) == 1);
+//         assert(firstTrue(x, 6) == 1);
+//         assert(firstTrue(x, 5) == 1);
+//         assert(firstTrue(x, 2) == 1);
+//         assert(firstTrue(x, 1) == -1);
+//         assert(firstTrue(x, 0) == -1);
+//         double y[] = {1,2,3,4,5,6,7,8};
+//         assert(firstTrue(y, 8) == -1);
+//     }
+//     {
+//         double x[] = {4,10,7,5,3,10,3,15,1,5};
+//         assert(indexOfMinimum(x, 10) == 8);
+//         assert(indexOfMinimum(x, 8) == 4);
+//         assert(indexOfMinimum(x, 7) == 4);
+//         assert(indexOfMinimum(x, 6) == 4);
+//         assert(indexOfMinimum(x, 5) == 4);
+//         assert(indexOfMinimum(x, 4) == 0);
+//         assert(indexOfMinimum(x, 2) == 0);
+//         assert(indexOfMinimum(x, 1) == 0);
+//         assert(indexOfMinimum(x, 0) == -1);
+//     }
+//     {
+//         double a2[] = {10,50,40,20,50,40,30};
+//         double a1_1[] = {50,20,30};
+//         double a1_2[] = {50,40,40};
+//         double a1_3[] = {50,30,20};
+//         double a1_4[] = {10,20,20};
+//         assert(isIn(a1_1, 3, a2, 7));
+//         assert(isIn(a1_2, 3, a2, 7));
+//         assert(!isIn(a1_3, 3, a2, 7));
+//         assert(!isIn(a1_4, 3, a2, 7));
+//         assert(isIn(a1_4, 1, a2, 1));
+//     }
+//     std::cout << "Tests passed!" << std::endl;
+// }
