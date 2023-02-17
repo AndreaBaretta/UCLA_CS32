@@ -1,6 +1,8 @@
 // #include <iostream>
 // #include <cassert>
 
+// using namespace std;
+
 // int double_comparisons = 0;
 
 // int factorial(int n) {
@@ -102,13 +104,10 @@ void order(double a[], int n) {
     }
     // Use divider to find least element
     int i;
-    int tmp;
-    divide(a, n, a[n - 1], tmp, i);
-    if (i == n - 1) {  // Found minimum
-        return order(a, i + 1);
-    } else {
-        return order(a, n - 1);
-    }
+    int j;
+    divide(a, n, a[n - 1], j, i);
+    order(a, j);
+    order(&a[i], n - i);
 }
 
 // bool isOrdered(double a[], int n) {
@@ -146,4 +145,25 @@ void order(double a[], int n) {
 //         std::cout << std::endl;
 //         assert(isOrdered(a2, 7));
 //     }
+// }
+
+// int main() {
+//      /*
+//      double test1[] = {10, 20, 40}, test2[] = {10, 50, 40, 20, 50, 40, 30};
+//      int n1 = 3, n2 = 7;
+//      assert(countIsIn(test1, n1, test2, n2) == 1);
+
+//      double test[] = {10, 20, 30, 40, 50, 60};
+//      int n = 6;
+//      order(test, n);
+//      for(int i = 0; i < n; i++) cout << test[i] << endl;
+//      */
+
+//      double test3[] = {0,10, 20,80,2,183,129,-9,-100, 10, 10,10,10,-10,10,10,40, 50, 60,30,10,100,0};
+
+//      int n3=17;
+
+//      order(test3, n3);
+
+//      for(int i = 0; i < n3; i++) cout << test3[i] << endl;
 // }
