@@ -2,6 +2,7 @@
 #define ACTOR_H_
 
 #include "GraphObject.h"
+#include "GameConstants.h"
 
 // Students:  Add code to this file, Actor.cpp, StudentWorld.h, and
 // StudentWorld.cpp
@@ -20,23 +21,49 @@
 // const int IID_VORTEX = 11;
 
 class Actor : public GraphObject {
-  public:
+  protected:
+    bool m_alive;
     template<typename... Args>
-    Actor(Args&&... args) : GraphObject(std::forward<Args>(args)...) {}
-
+    Actor(Args&&... args) : GraphObject(std::forward<Args>(args)...), m_alive(true) {}
+  public:
     virtual void update(StudentWorld* world) = 0;
+    virtual void die(StudentWorld* world) = 0;
+    bool isAlive() { return m_alive; }
 };
 
 class Player : public Actor {
+  protected:
+    enum State {
+      WAITING_TO_ROLL, WALKING
+    };
+
+    int m_ticks_to_move;
+    State m_state;
+
+    template<typename... Args>
+    Player(int imageID, Args&&... args) : Actor(imageID, std::forward<Args>(args)...), m_ticks_to_move(0), m_state(State::WAITING_TO_ROLL) {
+      setDirection(GraphObject::right);
+      m_depth = 0;
+      m_size = 1;
+    }
+  public:
+    virtual void update(StudentWorld* world) {}
+    virtual void die(StudentWorld* world) {}
+
+};
+
+
+
+class Peach : public Player {
   public:
     template<typename... Args>
-    Player(Args&&... args) : Actor(std::forward<Args>(args)...) {}
+    Peach(Args&&... args) : Player(IID_PEACH, std::forward<Args>(args)...) {}
+};
 
-    virtual void update(StudentWorld* world) {
-      switch (m_imageID) {
-        case ()
-      }
-    }
+class Yoshi : public Player {
+  public:
+    template<typename... Args>
+    Yoshi(Args&&... args) : Player(IID_YOSHI, std::forward<Args>(args)...) {}
 };
 
 #endif  // ACTOR_H_

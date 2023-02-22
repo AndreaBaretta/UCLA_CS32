@@ -3,7 +3,11 @@
         {
             "name": "Linux clang",
             "includePath": [
-                "/usr/include/**"
+                "/usr/include/**",
+                "/usr/include/c++/12/**",
+                "/usr/bin/**",
+                "/usr/local/**",
+                "/usr/local/include"
             ],
             "defines": [],
             "cStandard": "c17",
