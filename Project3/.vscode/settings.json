@@ -1,11 +1,14 @@
 {
     "editor.detectIndentation": false,
-    "editor.tabSize": 2,
+    "editor.tabSize": 4,
     "files.trimTrailingWhitespace": true,
     "cmake.buildDirectory": "${workspaceFolder}/builds/${buildKit}/${buildType}",
     "cmake.parallelJobs": 3,
     "cmake.buildToolArgs": [
         "-k"
     ],
-    "cmake.generator": "Unix Makefiles"
+    "cmake.generator": "Unix Makefiles",
+    "[cpp]": {
+      "editor.defaultFormatter": "ms-vscode.cpptools"
+    }
 }
