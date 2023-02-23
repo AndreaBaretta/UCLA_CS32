@@ -24,8 +24,10 @@
 // const int IID_VORTEX = 11;
 
 class Actor : public GraphObject {
-   protected:
+   private:
     bool m_alive;
+
+   protected:
     template <typename... Args>
     Actor(Args&&... args)
         : GraphObject(std::forward<Args>(args)...), m_alive(true) {}
@@ -46,44 +48,45 @@ class Avatar : public Actor {
 
     enum class WalkDirection { RIGHT = 0, LEFT = 1, UP = 2, DOWN = 3 };
 
-   protected:
+   private:
     int m_ticks_to_move;
     const int m_player_id;
     State m_state;
     WalkDirection m_walk_direction;
     int m_coins;
 
+   protected:
     template <typename... Args>
     Avatar(int imageID, Args&&... args)
-        : Actor(imageID, std::forward<Args>(args)...),
+        : Actor(imageID,
+                std::forward<Args>(args)...,
+                GraphObject::right,
+                0,
+                1.0),
           m_ticks_to_move(0),
           m_player_id(imageID == IID_PEACH ? 1 : 2),
-          m_state(State::WAITING_TO_ROLL),
+          m_state(WAITING_TO_ROLL),
           m_walk_direction(RIGHT),
-          m_coins(0) {
-        setDirection(GraphObject::right);
-        m_depth = 0;
-        m_size = 1;
-    }
+          m_coins(0) {}
 
    public:
     virtual void update(StudentWorld* world) {
         switch (m_state) {
-            case State::WAITING_TO_ROLL:
+            case WAITING_TO_ROLL:
                 int action = world->getAction(m_player_id);
 
                 switch (action) {
                     case ACTION_ROLL:
                         int die_roll = rand() % 10 + 1;
                         m_ticks_to_move = 8 * die_roll;
-                        m_state = State::WALKING;
+                        m_state = WALKING;
                         break;
                     default:
                         return;
                 }
 
                 break;
-            case State::WALKING:
+            case WALKING:
                 if (!world->canMoveInDirection(getX(), getY(),
                                                getDirection())) {
                     if (m_walk_direction == WalkDirection::RIGHT ||
@@ -100,17 +103,17 @@ class Avatar : public Actor {
                 if (m_walk_direction == WalkDirection::LEFT) {
                     setDirection(GraphObject::left);
                 }
-                auto [d_x, d_y] = MOVES[m_walk_direction];
+                auto [d_x, d_y] = MOVES[(int)m_walk_direction];
                 moveTo(getX() + d_x, getY() + d_y);
                 --m_ticks_to_move;
                 if (m_ticks_to_move == 0) {
-                    m_state = State::WAITING_TO_ROLL;
+                    m_state = WAITING_TO_ROLL;
                 }
                 break;
         }
     }
     void addCoins(int coins) { m_coins += coins; }
-    const bool isWalking() const { return m_state == State::WALKING; }
+    const bool isWalking() const { return m_state == WALKING; }
 };
 
 class Peach : public Avatar {
@@ -143,18 +146,20 @@ class Square : public Actor {
     // Calling effect does not consider whether or not the square's effects are
     // for transient avatars or one that finish their roll there
     virtual void update(StudentWorld* world) {
-        if (!isAlive()) { return; }
-        if (isOn(world->peach)) {
+        if (!isAlive()) {
+            return;
+        }
+        if (isOn(world->getPeach())) {
             if (!m_hasActivatedOnPeach) {
-                effect(world, world->peach);
+                effect(world, world->getPeach());
             }
         } else {
             m_hasActivatedOnPeach = false;
         }
 
-        if (isOn(world->yoshi)) {
+        if (isOn(world->getYoshi())) {
             if (!m_hasActivatedOnYoshi) {
-                effect(world, world->yoshi);
+                effect(world, world->getYoshi());
             }
         } else {
             m_hasActivatedOnYoshi = false;
@@ -164,23 +169,27 @@ class Square : public Actor {
 };
 
 class CoinSquare : public Square {
-   protected:
+   private:
     const int m_coins;
 
+   protected:
     template <typename... Args>
     CoinSquare(int imageID, Args&&... args)
-        : Square(imageID, std::forward<Args>(args)...),
-          m_coins(imageID == IID_BLUE_COIN_SQUARE ? 3 : -3) {
-        setDirection(GraphObject::right);
-        m_depth = 1;
-        setSize(1);
-    }
+        : Square(imageID,
+                 std::forward<Args>(args)...,
+                 GraphObject::right,
+                 1,
+                 1.0),
+          m_coins(imageID == IID_BLUE_COIN_SQUARE ? 3 : -3) {}
 
    public:
     virtual void effect(StudentWorld* world, Avatar* avatar) {
         avatar->addCoins(m_coins);
-        if (m_coins > 0) { world->playSound(SOUND_GIVE_COIN); }
-        else { world->playSound(SOUND_TAKE_COIN); }
+        if (m_coins > 0) {
+            world->playSound(SOUND_GIVE_COIN);
+        } else {
+            world->playSound(SOUND_TAKE_COIN);
+        }
     };
 };
 
