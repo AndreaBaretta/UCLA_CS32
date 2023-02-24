@@ -16,34 +16,21 @@ class StudentWorld : public GameWorld {
     Peach* m_peach;
     Yoshi* m_yoshi;
     std::vector<Actor*> m_actors;
+    int m_bank;
 
    public:
     StudentWorld(std::string assetPath);
-    virtual int init() {}
-    virtual int move() {}
-    virtual void cleanUp() {}
-    bool canMoveInDirection(int x, int y, int direction) {
-        switch (direction) {
-            case GraphObject::right:
-                return canMoveRight(x, y);
-                break;
-            case GraphObject::left:
-                return canMoveLeft(x, y);
-                break;
-            case GraphObject::up:
-                return canMoveUp(x, y);
-                break;
-            case GraphObject::down:
-                return canMoveDown(x, y);
-                break;
-            default:
-                return false;
-        }
-    }
-    bool canMoveRight(int x, int y);
-    bool canMoveLeft(int x, int y);
-    bool canMoveUp(int x, int y);
-    bool canMoveDown(int x, int y);
+    virtual int init();
+    virtual int move();
+    virtual void cleanUp();
+    int getBank() const;
+    void clearBank();
+    int addCoins(int coins);
+    bool canMoveInDirection(int x, int y, int direction) const;
+    bool canMoveRight(int x, int y) const;
+    bool canMoveLeft(int x, int y) const;
+    bool canMoveUp(int x, int y) const;
+    bool canMoveDown(int x, int y) const;
     Peach* getPeach();
     Yoshi* getYoshi();
 };

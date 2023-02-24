@@ -54,6 +54,8 @@ class Avatar : public Actor {
     State m_state;
     WalkDirection m_walk_direction;
     int m_coins;
+    int m_stars;
+    bool m_has_vortex;
 
    protected:
     template <typename... Args>
@@ -67,7 +69,9 @@ class Avatar : public Actor {
           m_player_id(imageID == IID_PEACH ? 1 : 2),
           m_state(WAITING_TO_ROLL),
           m_walk_direction(RIGHT),
-          m_coins(0) {}
+          m_coins(0),
+          m_stars(0),
+          m_has_vortex(false) {}
 
    public:
     virtual void update(StudentWorld* world) {
@@ -112,7 +116,13 @@ class Avatar : public Actor {
                 break;
         }
     }
+    int remainingSteps() { return (m_ticks_to_move+7) % 8; }
+    int getCoins() { return m_coins; }
+    int getStars() { return m_stars; }
+    bool hasVortex() { return m_has_vortex; }
     void addCoins(int coins) { m_coins += coins; }
+    void addStars(int stars) { m_stars += stars; }
+    void giveVortex() { m_has_vortex = true; }
     const bool isWalking() const { return m_state == WALKING; }
 };
 
@@ -193,11 +203,20 @@ class CoinSquare : public Square {
     };
 };
 
-class BlueCoinSquare : public Square {
+class BlueCoinSquare : public CoinSquare {
    public:
     template <typename... Args>
     BlueCoinSquare(Args&&... args)
-        : Square(IID_BLUE_COIN_SQUARE, std::forward<Args>(args)...) {}
+        : CoinSquare(IID_BLUE_COIN_SQUARE, std::forward<Args>(args)...) {}
+
+    virtual void die(StudentWorld* world) {}
+};
+
+class RedCoinSquare : public CoinSquare {
+   public:
+    template <typename... Args>
+    RedCoinSquare(Args&&... args)
+        : CoinSquare(IID_RED_COIN_SQUARE, std::forward<Args>(args)...) {}
 
     virtual void die(StudentWorld* world) {}
 };
