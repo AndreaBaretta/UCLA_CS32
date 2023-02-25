@@ -1,6 +1,6 @@
 {
     "editor.detectIndentation": false,
-    "editor.tabSize": 4,
+    "editor.tabSize": 2,
     "files.trimTrailingWhitespace": true,
     "cmake.buildDirectory": "${workspaceFolder}/builds/${buildKit}/${buildType}",
     "cmake.parallelJobs": 3,

@@ -1,15 +1,18 @@
 #include "StudentWorld.h"
 #include <string>
+#include "Actor.h"
 #include "Board.h"
 #include "GameConstants.h"
 using namespace std;
 
+// const int GraphObject::right;
+
 std::string operator+(std::string& s, int x) {
-    return s + std::to_string(x);
+  return s + std::to_string(x);
 }
 
 GameWorld* createStudentWorld(string assetPath) {
-    return new StudentWorld(assetPath);
+  return new StudentWorld(assetPath);
 }
 
 // Students:  Add code to this file, StudentWorld.h, Actor.h, and Actor.cpp
@@ -23,117 +26,144 @@ StudentWorld::StudentWorld(string assetPath)
       m_bank(0) {}
 
 int StudentWorld::init() {
-    // startCountdownTimer(5);  // this placeholder causes timeout after 5
-    // seconds
+  // startCountdownTimer(5);  // this placeholder causes timeout after 5
+  // seconds
 
-    // empty, player, blue_coin_square, red_coin_square, up_dir_square,
-    // down_dir_square, left_dir_square, right_dir_square, event_square,
-    // bank_square, star_square, bowser, boo
+  // empty, player, blue_coin_square, red_coin_square, up_dir_square,
+  // down_dir_square, left_dir_square, right_dir_square, event_square,
+  // bank_square, star_square, bowser, boo
 
-    m_board.loadBoard(assetPath());
+  m_board.loadBoard(assetPath());
 
-    for (int y = 0; y < BOARD_HEIGHT; ++y) {
-        for (int x = 0; x < BOARD_WIDTH; ++x) {
-            const Board::GridEntry entry = m_board.getContentsOf(x, y);
-            switch (entry) {
-                case Board::GridEntry::player:
-                    m_actors.push_back(new BlueCoinSquare(x, y));
-                    m_peach = new Peach(x, y);
-                    m_yoshi = new Yoshi(x, y);
-                    break;
-                case Board::GridEntry::blue_coin_square:
-                    m_actors.push_back(new BlueCoinSquare(x, y));
-                    break;
-                case Board::GridEntry::red_coin_square:
-                    m_actors.push_back(new RedCoinSquare(x, y));
-                    break;
-                case Board::GridEntry::up_dir_square:
-                    break;
-                case Board::GridEntry::down_dir_square:
-                    break;
-                case Board::GridEntry::left_dir_square:
-                    break;
-                case Board::GridEntry::right_dir_square:
-                    break;
-                case Board::GridEntry::event_square:
-                    break;
-                case Board::GridEntry::bank_square:
-                    break;
-                case Board::GridEntry::star_square:
-                    break;
-                case Board::GridEntry::bowser:
-                    break;
-                case Board::GridEntry::boo:
-                    break;
-            }
-        }
+  for (int y = 0; y < BOARD_HEIGHT; ++y) {
+    for (int x = 0; x < BOARD_WIDTH; ++x) {
+      const Board::GridEntry entry = m_board.getContentsOf(x, y);
+      switch (entry) {
+        case Board::GridEntry::player:
+          m_peach = new Peach(x, y);
+          m_yoshi = new Yoshi(x, y);
+          m_actors.push_back(m_peach);
+          m_actors.push_back(m_yoshi);
+          m_actors.push_back(new BlueCoinSquare(x, y));
+          break;
+        case Board::GridEntry::blue_coin_square:
+          m_actors.push_back(new BlueCoinSquare(x, y));
+          break;
+        case Board::GridEntry::red_coin_square:
+          m_actors.push_back(new RedCoinSquare(x, y));
+          break;
+        case Board::GridEntry::up_dir_square:
+          break;
+        case Board::GridEntry::down_dir_square:
+          break;
+        case Board::GridEntry::left_dir_square:
+          break;
+        case Board::GridEntry::right_dir_square:
+          break;
+        case Board::GridEntry::event_square:
+          break;
+        case Board::GridEntry::bank_square:
+          break;
+        case Board::GridEntry::star_square:
+          break;
+        case Board::GridEntry::bowser:
+          break;
+        case Board::GridEntry::boo:
+          break;
+        default:
+          break;
+      }
     }
+  }
 
-    startCountdownTimer(99);
+  startCountdownTimer(99);
 
-    return GWSTATUS_CONTINUE_GAME;
+  return GWSTATUS_CONTINUE_GAME;
 }
 
 int StudentWorld::move() {
-    // This code is here merely to allow the game to build, run, and terminate
-    // after you hit ESC. Notice that the return value GWSTATUS_NOT_IMPLEMENTED
-    // will cause our framework to end the game.
+  // This code is here merely to allow the game to build, run, and terminate
+  // after you hit ESC. Notice that the return value GWSTATUS_NOT_IMPLEMENTED
+  // will cause our framework to end the game.
 
-    for (Actor* const a : m_actors) {
-        a->update(this);
-    }
+  for (Actor* const a : m_actors) {
+    a->update(this);
+  }
 
-    setGameStatText("P1 Roll: "s + std::to_string(m_peach->remainingSteps()) +
-                    " Stars: " + std::to_string(m_peach->getStars()) +
-                    " $$: " + std::to_string(m_peach->getCoins()) + " " +
-                    (m_peach->hasVortex() ? "VOR" : "") +
-                    " | Time: " + std::to_string(timeRemaining()) +
-                    " | Bank: " + std::to_string(getBank()) +
-                    " | P2 Roll: " + std::to_string(m_yoshi->remainingSteps()) +
-                    " Stars: " + std::to_string(m_yoshi->getStars()) +
-                    " $$: " + std::to_string(m_yoshi->getCoins()) + " " +
-                    (m_yoshi->hasVortex() ? "VOR" : ""));
+  setGameStatText("P1 Roll: "s + std::to_string(m_peach->remainingSteps()) +
+                  " Stars: " + std::to_string(m_peach->getStars()) +
+                  " $$: " + std::to_string(m_peach->getCoins()) + " " +
+                  (m_peach->hasVortex() ? "VOR" : "") +
+                  " | Time: " + std::to_string(timeRemaining()) +
+                  " | Bank: " + std::to_string(getBank()) +
+                  " | P2 Roll: " + std::to_string(m_yoshi->remainingSteps()) +
+                  " Stars: " + std::to_string(m_yoshi->getStars()) +
+                  " $$: " + std::to_string(m_yoshi->getCoins()) + " " +
+                  (m_yoshi->hasVortex() ? "VOR" : ""));
 
-    if (timeRemaining() <= 0) {
-        return GWSTATUS_NOT_IMPLEMENTED;
-    }
+  if (timeRemaining() <= 0) {
+    return GWSTATUS_NOT_IMPLEMENTED;
+  }
 
-    return GWSTATUS_CONTINUE_GAME;
+  return GWSTATUS_CONTINUE_GAME;
 }
 
 void StudentWorld::cleanUp() {
-    for (Actor* const a : m_actors) {
-        delete a;
-    }
+  for (Actor* const a : m_actors) {
+    delete a;
+  }
 }
 
 int StudentWorld::getBank() const {
-    return m_bank;
+  return m_bank;
 }
 
 void StudentWorld::clearBank() {
-    m_bank = 0;
+  m_bank = 0;
 }
 
-int StudentWorld::addCoins(int coins) {
-    m_bank += coins;
+void StudentWorld::addCoins(int coins) {
+  m_bank += coins;
 }
 
-bool StudentWorld::canMoveInDirection(int x, int y, int direction) const {
-    switch (direction) {
-        case GraphObject::right:
-            return canMoveRight(x, y);
-            break;
-        case GraphObject::left:
-            return canMoveLeft(x, y);
-            break;
-        case GraphObject::up:
-            return canMoveUp(x, y);
-            break;
-        case GraphObject::down:
-            return canMoveDown(x, y);
-            break;
-        default:
-            return false;
-    }
+bool StudentWorld::canMoveInDirection(int x, int y, int direction) {
+  switch (direction) {
+    case GraphObject::right:
+      return canMoveRight(x, y);
+      break;
+    case GraphObject::left:
+      return canMoveLeft(x, y);
+      break;
+    case GraphObject::up:
+      return canMoveUp(x, y);
+      break;
+    case GraphObject::down:
+      return canMoveDown(x, y);
+      break;
+    default:
+      return false;
+  }
+}
+
+bool StudentWorld::canMoveRight(int x, int y) {
+  return m_board.getContentsOf(x + 1, y) != Board::GridEntry::empty;
+}
+
+bool StudentWorld::canMoveLeft(int x, int y) {
+  return m_board.getContentsOf(x - 1, y) != Board::GridEntry::empty;
+}
+
+bool StudentWorld::canMoveUp(int x, int y) {
+  return m_board.getContentsOf(x, y + 1) != Board::GridEntry::empty;
+}
+
+bool StudentWorld::canMoveDown(int x, int y) {
+  return m_board.getContentsOf(x, y - 1) != Board::GridEntry::empty;
+}
+
+Peach* StudentWorld::getPeach() const {
+  return m_peach;
+}
+Yoshi* StudentWorld::getYoshi() const {
+  return m_yoshi;
 }

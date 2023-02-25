@@ -80,7 +80,7 @@ public:
 			std::cerr << "***** Bad color_map_type or image type in " << filename_tga << std::endl;
 			return false;
 		}
-  
+
 		if (byteCount != 3 && byteCount != 4) {
 			std::cerr << "***** Bad byte count " << byteCount << " in " << filename_tga << std::endl;
 			return false;
@@ -290,7 +290,7 @@ private:
 		xout = x * cos(theta) - y * sin(theta);
 		yout = y * cos(theta) + x * sin(theta);
 	}
-  
+
 	void flipVertical(char* image, int width, int height, int bytes_per_pixel) {
 		int bytes_per_row = width * bytes_per_pixel;
 		for (int i = 0; i < height/2; i++)

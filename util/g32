@@ -1,0 +1,46 @@
+#!/bin/bash
+
+GXX=/usr/local/cs/bin/g++
+[ -x $GXX ] || GXX=/usr/bin/g++
+
+RPATH='-Wl,-rpath=/usr/local/cs/lib64'
+WARNINGS='-Wall -Wextra -Wno-sign-compare -Werror=return-type -Wno-unknown-pragmas -Werror=vla'
+# error=vla for CS31 P4 and P5
+# no-unknown-pragmas for VC++ strcpy_s error #pragma warning(disable : 4996)
+
+STD='-std=c++17'
+SAN='-fsanitize=address -fsanitize=undefined -fno-omit-frame-pointer'
+SAN2='-fsanitize=bounds'
+OPT=
+
+case $($GXX --version | head -1) in
+ *\ 4.9*)		SAN2= ; STD='-std=c++14' ;;
+ *\ 4.8*)		SAN2= ; SAN= ; STD='-std=c++11' ;;
+ *\ 4.[3-7]*)	SAN2= ; SAN= ; STD='-std=c++0x' ;;
+esac
+
+case $0 in
+ *fast)	SAN2= ; SAN= ; OPT='-O2' ;;
+esac
+
+# For CS 31 Project 6, with exception for still-active Project 5 and Project 7
+#case $0 in
+# *31*)	P5NAME=jitter
+#		P7NAME=garks
+#		isP5=n
+#		for arg
+#		 do		case "${arg,,}" in
+#				 $P5NAME.cpp|xxxtest${P5NAME}[0-9]*.cpp|$P7NAME.cpp)
+#						isP5=y
+#						break ;;
+#				esac
+#		 done
+#
+#		if [ $isP5 = n ]
+#		 then	$GXX $STD -w $RPATH "$@" -lpthread
+#				exit
+#		fi
+#esac
+# End of CS 31 Project 6 code
+
+$GXX $STD $SAN $SAN2 $OPT $WARNINGS $RPATH "$@" -lpthread
