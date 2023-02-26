@@ -56,31 +56,22 @@ int StudentWorld::init() {
           m_actors.push_back(new RedCoinSquare(x, y));
           break;
         case Board::GridEntry::up_dir_square:
-          m_actors.push_back(new BlueCoinSquare(x, y));
           break;
         case Board::GridEntry::down_dir_square:
-          m_actors.push_back(new BlueCoinSquare(x, y));
           break;
         case Board::GridEntry::left_dir_square:
-          m_actors.push_back(new BlueCoinSquare(x, y));
           break;
         case Board::GridEntry::right_dir_square:
-          m_actors.push_back(new BlueCoinSquare(x, y));
           break;
         case Board::GridEntry::event_square:
-          m_actors.push_back(new BlueCoinSquare(x, y));
           break;
         case Board::GridEntry::bank_square:
-          m_actors.push_back(new BlueCoinSquare(x, y));
           break;
         case Board::GridEntry::star_square:
-          m_actors.push_back(new BlueCoinSquare(x, y));
           break;
         case Board::GridEntry::bowser:
-          m_actors.push_back(new BlueCoinSquare(x, y));
           break;
         case Board::GridEntry::boo:
-          m_actors.push_back(new BlueCoinSquare(x, y));
           break;
         default:
           break;

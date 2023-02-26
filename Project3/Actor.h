@@ -36,8 +36,8 @@ class Actor : public GraphObject {
 
  public:
   virtual void update(StudentWorld* world) = 0;
-  virtual void die(StudentWorld* world) {}
-  bool isAlive() { return m_alive; }
+  virtual void die(StudentWorld* world);
+  bool isAlive();
 };
 
 class Avatar : public Actor {
@@ -69,79 +69,29 @@ class Avatar : public Actor {
 
  public:
   virtual int getAction(StudentWorld* world) = 0;
-  virtual void update(StudentWorld* world) {
-    switch (m_state) {
-      case WAITING_TO_ROLL: {
-        int action = getAction(world);
-        int die_roll = rand() % 10 + 1;
-        // int die_roll = 5;
-        switch (action) {
-          case ACTION_ROLL:
-            m_ticks_to_move = 8 * die_roll;
-            m_state = WALKING;
-            break;
-          default:
-            return;
-        }
-
-        break;
-      }
-      case WALKING: {
-        // std::cout << "x: " << getX() << ", y: " << getY() << std::endl;
-        if (!world->canMoveInDirection(getX() / 16, getY() / 16,
-                                       m_walk_direction) &&
-            m_ticks_to_move % 8 == 0) {
-          if (m_walk_direction == WalkDirection::RIGHT ||
-              m_walk_direction == WalkDirection::LEFT) {
-            m_walk_direction = world->canMoveUp(getX() / 16, getY() / 16)
-                                   ? WalkDirection::UP
-                                   : WalkDirection::DOWN;
-          } else {
-            m_walk_direction = world->canMoveRight(getX() / 16, getY() / 16)
-                                   ? WalkDirection::RIGHT
-                                   : WalkDirection::LEFT;
-          }
-        }
-        if (m_walk_direction == WalkDirection::LEFT) {
-          setDirection(GraphObject::left);
-        } else {
-          setDirection(GraphObject::right);
-        }
-        auto [d_x, d_y] = MOVES[(int)m_walk_direction];
-        moveTo(getX() + d_x, getY() + d_y);
-        --m_ticks_to_move;
-        if (m_ticks_to_move == 0) {
-          m_state = WAITING_TO_ROLL;
-        }
-        break;
-      }
-    }
-  }
-  int remainingSteps() { return (m_ticks_to_move + 7) / 8; }
-  int getCoins() { return m_coins; }
-  int getStars() { return m_stars; }
-  bool hasVortex() { return m_has_vortex; }
-  void addCoins(int coins) { m_coins += coins; }
-  void addStars(int stars) {
-    m_stars += stars;
-    m_stars = std::max(m_stars, 0);
-  }
-  void giveVortex() { m_has_vortex = true; }
-  const bool isWalking() const { return m_state == WALKING; }
+  virtual void update(StudentWorld* world);
+  int remainingSteps();
+  int getCoins();
+  int getStars();
+  bool hasVortex();
+  void addCoins(int coins);
+  void addStars(int stars);
+  void giveVortex();
+  const bool isWalking() const;
 };
 
 class Peach : public Avatar {
  public:
   template <typename... Args>
   Peach(Args&&... args) : Avatar(IID_PEACH, std::forward<Args>(args)...) {}
-  virtual int getAction(StudentWorld* world) { return world->getAction(1); }
+  virtual int getAction(StudentWorld* world);
 };
 
 class Yoshi : public Avatar {
  public:
   template <typename... Args>
   Yoshi(Args&&... args) : Avatar(IID_YOSHI, std::forward<Args>(args)...) {}
-  virtual int getAction(StudentWorld* world) { return world->getAction(2); }
+  virtual int getAction(StudentWorld* world);
 };
 
 class Square : public Actor {
@@ -153,65 +103,14 @@ class Square : public Actor {
   Square(int imageID, Args&&... args)
       : Actor(imageID, std::forward<Args>(args)...),
         m_hasActivatedOnPeach(false),
-        m_hasActivatedOnYoshi(false) {
-  }  // TODO: Make sure the first square doesn't activate on Peach and Yoshi
+        m_hasActivatedOnYoshi(false) {}
+
  public:
-  bool isOn(Avatar* avatar) {
-    return avatar->getX() == getX() && avatar->getY() == getY();
-  }
+  bool isOn(Avatar* avatar);
   // Calling effect does not consider whether or not the square's effects are
   // for transient avatars or one that finish their roll there
-  virtual void update(StudentWorld* world) {
-    if (!isAlive()) {
-      return;
-    }
-    if (isOn(world->getPeach())) {
-      if (!m_hasActivatedOnPeach) {
-        effect(world, world->getPeach());
-        m_hasActivatedOnPeach = true;
-      }
-    } else {
-      m_hasActivatedOnPeach = false;
-    }
-
-    if (isOn(world->getYoshi())) {
-      if (!m_hasActivatedOnYoshi) {
-        effect(world, world->getYoshi());
-        m_hasActivatedOnYoshi = true;
-      }
-    } else {
-      m_hasActivatedOnYoshi = false;
-    }
-  }
+  virtual void update(StudentWorld* world);
   virtual void effect(StudentWorld* world, Avatar* avatar) = 0;
-};
-
-class CoinSquare : public Square {
- private:
-  const int m_coins;
-
- protected:
-  template <typename... Args>
-  CoinSquare(int imageID, Args&&... args)
-      : Square(imageID,
-               std::forward<Args>(args)...,
-               GraphObject::right,
-               1,
-               1.0),
-        m_coins(imageID == IID_BLUE_COIN_SQUARE ? 3 : -3) {}
-
- public:
-  virtual void effect(StudentWorld* world, Avatar* avatar) {
-    if (avatar->remainingSteps() != 0) {
-      return;
-    }
-    avatar->addCoins(m_coins);
-    if (m_coins > 0) {
-      world->playSound(SOUND_GIVE_COIN);
-    } else {
-      world->playSound(SOUND_TAKE_COIN);
-    }
-  }
 };
 
 class BlueCoinSquare : public Square {
@@ -224,15 +123,9 @@ class BlueCoinSquare : public Square {
                1,
                1.0) {}
 
-  virtual void effect(StudentWorld* world, Avatar* avatar) {
-    if (avatar->remainingSteps() != 0) {
-      return;
-    }
-    avatar->addCoins(3);
-    world->playSound(SOUND_GIVE_COIN);
-  }
+  virtual void effect(StudentWorld* world, Avatar* avatar);
 
-  virtual void die(StudentWorld* world) {}
+  virtual void die(StudentWorld* world);
 };
 
 class RedCoinSquare : public Square {
@@ -245,13 +138,7 @@ class RedCoinSquare : public Square {
                1,
                1.0) {}
 
-  virtual void effect(StudentWorld* world, Avatar* avatar) {
-    if (avatar->remainingSteps() != 0) {
-      return;
-    }
-    avatar->addCoins(-3);
-    world->playSound(SOUND_TAKE_COIN);
-  }
+  void effect(StudentWorld* world, Avatar* avatar);
 };
 
 #endif  // ACTOR_H_
