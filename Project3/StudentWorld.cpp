@@ -1,15 +1,15 @@
 #include "StudentWorld.h"
+#include <iostream>
 #include <string>
 #include "Actor.h"
 #include "Board.h"
 #include "GameConstants.h"
 using namespace std;
 
-// const int GraphObject::right;
-
-std::string operator+(std::string& s, int x) {
-  return s + std::to_string(x);
-}
+const int GraphObject::left;
+const int GraphObject::right;
+const int GraphObject::up;
+const int GraphObject::down;
 
 GameWorld* createStudentWorld(string assetPath) {
   return new StudentWorld(assetPath);
@@ -33,11 +33,14 @@ int StudentWorld::init() {
   // down_dir_square, left_dir_square, right_dir_square, event_square,
   // bank_square, star_square, bowser, boo
 
-  m_board.loadBoard(assetPath());
+  m_board.loadBoard(assetPath() + "board0" + std::to_string(getBoardNumber()) +
+                    ".txt");
 
-  for (int y = 0; y < BOARD_HEIGHT; ++y) {
-    for (int x = 0; x < BOARD_WIDTH; ++x) {
-      const Board::GridEntry entry = m_board.getContentsOf(x, y);
+  for (int i = 0; i < BOARD_HEIGHT; ++i) {
+    for (int j = 0; j < BOARD_WIDTH; ++j) {
+      const int x = SPRITE_WIDTH * i;
+      const int y = SPRITE_HEIGHT * j;
+      const Board::GridEntry entry = m_board.getContentsOf(i, j);
       switch (entry) {
         case Board::GridEntry::player:
           m_peach = new Peach(x, y);
@@ -53,22 +56,31 @@ int StudentWorld::init() {
           m_actors.push_back(new RedCoinSquare(x, y));
           break;
         case Board::GridEntry::up_dir_square:
+          m_actors.push_back(new BlueCoinSquare(x, y));
           break;
         case Board::GridEntry::down_dir_square:
+          m_actors.push_back(new BlueCoinSquare(x, y));
           break;
         case Board::GridEntry::left_dir_square:
+          m_actors.push_back(new BlueCoinSquare(x, y));
           break;
         case Board::GridEntry::right_dir_square:
+          m_actors.push_back(new BlueCoinSquare(x, y));
           break;
         case Board::GridEntry::event_square:
+          m_actors.push_back(new BlueCoinSquare(x, y));
           break;
         case Board::GridEntry::bank_square:
+          m_actors.push_back(new BlueCoinSquare(x, y));
           break;
         case Board::GridEntry::star_square:
+          m_actors.push_back(new BlueCoinSquare(x, y));
           break;
         case Board::GridEntry::bowser:
+          m_actors.push_back(new BlueCoinSquare(x, y));
           break;
         case Board::GridEntry::boo:
+          m_actors.push_back(new BlueCoinSquare(x, y));
           break;
         default:
           break;
@@ -102,7 +114,14 @@ int StudentWorld::move() {
                   (m_yoshi->hasVortex() ? "VOR" : ""));
 
   if (timeRemaining() <= 0) {
-    return GWSTATUS_NOT_IMPLEMENTED;
+    if (m_peach->getStars() > m_yoshi->getStars()) {
+      return GWSTATUS_PEACH_WON;
+    } else if (m_yoshi->getStars() > m_peach->getStars()) {
+      return GWSTATUS_YOSHI_WON;
+    } else {
+      return m_peach->getCoins() > m_yoshi->getCoins() ? GWSTATUS_PEACH_WON
+                                                       : GWSTATUS_YOSHI_WON;
+    }
   }
 
   return GWSTATUS_CONTINUE_GAME;
@@ -126,18 +145,18 @@ void StudentWorld::addCoins(int coins) {
   m_bank += coins;
 }
 
-bool StudentWorld::canMoveInDirection(int x, int y, int direction) {
+bool StudentWorld::canMoveInDirection(int x, int y, WalkDirection direction) {
   switch (direction) {
-    case GraphObject::right:
+    case WalkDirection::RIGHT:
       return canMoveRight(x, y);
       break;
-    case GraphObject::left:
+    case WalkDirection::LEFT:
       return canMoveLeft(x, y);
       break;
-    case GraphObject::up:
+    case WalkDirection::UP:
       return canMoveUp(x, y);
       break;
-    case GraphObject::down:
+    case WalkDirection::DOWN:
       return canMoveDown(x, y);
       break;
     default:
@@ -146,18 +165,30 @@ bool StudentWorld::canMoveInDirection(int x, int y, int direction) {
 }
 
 bool StudentWorld::canMoveRight(int x, int y) {
+  // std::cout << "Grid to right of " << x << ", " << y << " = " <<
+  // m_board.getContentsOf(x, y) << ": " <<  m_board.getContentsOf(x + 1, y) <<
+  // std::endl;
   return m_board.getContentsOf(x + 1, y) != Board::GridEntry::empty;
 }
 
 bool StudentWorld::canMoveLeft(int x, int y) {
+  // std::cout << "Grid to left of " << x << ", " << y << " = " <<
+  // m_board.getContentsOf(x, y) << ": " <<  m_board.getContentsOf(x - 1, y) <<
+  // std::endl;
   return m_board.getContentsOf(x - 1, y) != Board::GridEntry::empty;
 }
 
 bool StudentWorld::canMoveUp(int x, int y) {
+  // std::cout << "Grid to up of " << x << ", " << y << " = " <<
+  // m_board.getContentsOf(x, y) << ": " <<  m_board.getContentsOf(x, y + 1) <<
+  // std::endl;
   return m_board.getContentsOf(x, y + 1) != Board::GridEntry::empty;
 }
 
 bool StudentWorld::canMoveDown(int x, int y) {
+  // std::cout << "Grid to down of " << x << ", " << y << " = " <<
+  // m_board.getContentsOf(x, y) << ": " <<  m_board.getContentsOf(x, y - 1) <<
+  // std::endl;
   return m_board.getContentsOf(x, y - 1) != Board::GridEntry::empty;
 }
 

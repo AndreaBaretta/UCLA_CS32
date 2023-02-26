@@ -1,11 +1,11 @@
-CC = g++
+CC = g++ -g
 INCLUDES = -I/usr/include/GL
 LIBS = -Wl,-rpath=/usr/local/cs/lib64 -lglut -lGL -lGLU
 STD = -std=c++17
 
 # On cs32.seas.ucla.edu or lnxsrv06 or lnxsrv07 or lnxsrv09, uncomment the following three lines
 #CC = g32
-#STD = 
+#STD =
 
 OBJECTS = $(patsubst %.cpp, %.o, $(wildcard *.cpp))
 HEADERS = $(wildcard *.h)
@@ -19,7 +19,7 @@ all: $(PRODUCT)
 %.o: %.cpp $(HEADERS)
 	$(CC) -c $(STD) $(INCLUDES) $< -o $@
 
-$(PRODUCT): $(OBJECTS) 
+$(PRODUCT): $(OBJECTS)
 	$(CC) $(OBJECTS) $(LIBS) -o $@
 
 clean:

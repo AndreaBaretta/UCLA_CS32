@@ -7,6 +7,8 @@
 #include "GameWorld.h"
 #include "GraphObject.h"
 
+enum class WalkDirection { RIGHT = 0, LEFT = 1, UP = 2, DOWN = 3 };
+
 class Peach;
 class Yoshi;
 class Actor;
@@ -28,7 +30,7 @@ class StudentWorld : public GameWorld {
   int getBank() const;
   void clearBank();
   void addCoins(int coins);
-  bool canMoveInDirection(int x, int y, int direction);
+  bool canMoveInDirection(int x, int y, WalkDirection direction);
   bool canMoveRight(int x, int y);
   bool canMoveLeft(int x, int y);
   bool canMoveUp(int x, int y);
