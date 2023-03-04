@@ -40,6 +40,7 @@ class StudentWorld : public GameWorld {
   bool checkCollision(Actor* actor);
   void addActor(Actor* actor);
   bool isAtFork(int x, int y, WalkDirection direction);
+  Actor* getRandomSquare();
 };
 
 #endif  // STUDENTWORLD_H_

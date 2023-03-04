@@ -173,7 +173,7 @@ private:
 		return m_imageID;
 	}
 
-  private:
+  public:
 	  // Prevent copying or assigning GraphObjects
 	GraphObject(const GraphObject&);
 	GraphObject& operator=(const GraphObject&);

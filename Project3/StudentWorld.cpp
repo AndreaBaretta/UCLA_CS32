@@ -56,23 +56,31 @@ int StudentWorld::init() {
           m_actors.push_back(new RedCoinSquare(x, y));
           break;
         case Board::GridEntry::up_dir_square:
+          m_actors.push_back(new DirectionalSquare(x, y, GraphObject::up));
           break;
         case Board::GridEntry::down_dir_square:
+          m_actors.push_back(new DirectionalSquare(x, y, GraphObject::down));
           break;
         case Board::GridEntry::left_dir_square:
+          m_actors.push_back(new DirectionalSquare(x, y, GraphObject::left));
           break;
         case Board::GridEntry::right_dir_square:
+          m_actors.push_back(new DirectionalSquare(x, y, GraphObject::right));
           break;
         case Board::GridEntry::event_square:
+          m_actors.push_back(new EventSquare(x, y));
           break;
         case Board::GridEntry::bank_square:
+          m_actors.push_back(new BankSquare(x, y));
           break;
         case Board::GridEntry::star_square:
-        m_actors.push_back(new StarSquare(x, y));
+          m_actors.push_back(new StarSquare(x, y));
           break;
         case Board::GridEntry::bowser:
+          m_actors.push_back(new BlueCoinSquare(x, y));
           break;
         case Board::GridEntry::boo:
+          m_actors.push_back(new BlueCoinSquare(x, y));
           break;
         default:
           break;
@@ -90,8 +98,19 @@ int StudentWorld::move() {
   // after you hit ESC. Notice that the return value GWSTATUS_NOT_IMPLEMENTED
   // will cause our framework to end the game.
 
-  for (Actor* const a : m_actors) {
-    a->update(this);
+  // for (Actor* const a : m_actors) {
+  //   a->update(this);
+  // }
+
+  for (vector<Actor*>::iterator it = m_actors.begin(); it != m_actors.end();) {
+    (*it)->update(this);
+    if (!(*it)->isAlive()) {
+      (*it)->die(this);
+      delete *it;
+      it = m_actors.erase(it);
+    } else {
+      ++it;
+    }
   }
 
   setGameStatText("P1 Roll: "s + std::to_string(m_peach->remainingSteps()) +
@@ -193,10 +212,10 @@ Yoshi* StudentWorld::getYoshi() const {
 
 bool StudentWorld::checkCollision(Actor* actor) {
   for (Actor* a : m_actors) {
-    if (a->getX() < actor->getX() + SPRITE_WIDTH &&
-        a->getX() > actor->getX() - SPRITE_WIDTH &&
-        a->getY() < actor->getY() + SPRITE_HEIGHT &&
-        a->getY() > actor->getY() - SPRITE_HEIGHT && a->isImpactible()) {
+    if (a->isImpactible() && (a->getX() < actor->getX() + SPRITE_WIDTH &&
+                              a->getX() > actor->getX() - SPRITE_WIDTH &&
+                              a->getY() < actor->getY() + SPRITE_HEIGHT &&
+                              a->getY() > actor->getY() - SPRITE_HEIGHT)) {
       a->impact();
       return true;
     }
@@ -209,13 +228,32 @@ void StudentWorld::addActor(Actor* actor) {
 }
 
 bool StudentWorld::isAtFork(int x, int y, WalkDirection direction) {
-  if ((direction == WalkDirection::RIGHT || direction == WalkDirection::LEFT) &&
-      (canMoveDown(x, y) || canMoveUp(x, y))) {
-    return true;
-  } else if ((direction == WalkDirection::UP ||
-              direction == WalkDirection::DOWN) &&
-             (canMoveRight(x, y) || canMoveLeft(x, y))) {
-    return true;
+  int i = 0;
+  if (direction == WalkDirection::RIGHT) {
+    if (canMoveDown(x, y)) { ++i; }
+    if (canMoveUp(x, y)) { ++i; }
+    if (canMoveRight(x, y)) { ++i; }
+  } else if (direction == WalkDirection::LEFT) {
+    if (canMoveDown(x, y)) { ++i; }
+    if (canMoveUp(x, y)) { ++i; }
+    if (canMoveLeft(x, y)) { ++i; }
+  } else if (direction == WalkDirection::UP) {
+    if (canMoveRight(x, y)) { ++i; }
+    if (canMoveLeft(x, y)) { ++i; }
+    if (canMoveUp(x, y)) { ++i; }
+  } else if (direction == WalkDirection::DOWN) {
+    if (canMoveRight(x, y)) { ++i; }
+    if (canMoveLeft(x, y)) { ++i; }
+    if (canMoveDown(x, y)) { ++i; }
   }
-  return false;
+
+  return i >= 2;
+}
+
+Actor* StudentWorld::getRandomSquare() {
+  int i;
+  do {
+    i = randInt(0, m_actors.size() - 1);
+  } while (!m_actors[i]->isGridSquare());
+  return m_actors[i];
 }

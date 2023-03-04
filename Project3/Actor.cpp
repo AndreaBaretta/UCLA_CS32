@@ -17,8 +17,16 @@ bool Actor::isImpactible() const {
 
 void Actor::impact() {}
 
+bool Actor::isGridSquare() const {
+  return false;
+}
+
 bool Actor::isAlive() const {
   return m_alive;
+}
+
+std::pair<int, int> Actor::getPosition() const {
+  return {getX(), getY()};
 }
 
 // -------- AVATAR --------
@@ -30,11 +38,33 @@ Avatar::Avatar(int imageID, int x, int y)
       m_walk_direction(WalkDirection::RIGHT),
       m_coins(0),
       m_stars(0),
-      m_has_vortex(false) {}
+      m_has_vortex(false),
+      m_teleported(false),
+      m_swapped(false),
+      m_has_moved(false),
+      m_been_forced(false) {}
 
 void Avatar::update(StudentWorld* world) {
   switch (m_state) {
     case WAITING_TO_ROLL: {
+      if (m_teleported) {
+        std::vector<WalkDirection> valid_directions(4);
+        if (world->canMoveUp(getX(), getY())) {
+          valid_directions.push_back(WalkDirection::UP);
+        }
+        if (world->canMoveDown(getX(), getY())) {
+          valid_directions.push_back(WalkDirection::DOWN);
+        }
+        if (world->canMoveRight(getX(), getY())) {
+          valid_directions.push_back(WalkDirection::RIGHT);
+        }
+        if (world->canMoveLeft(getX(), getY())) {
+          valid_directions.push_back(WalkDirection::LEFT);
+        }
+        m_walk_direction =
+            valid_directions[randInt(1, valid_directions.size() - 1)];
+        m_teleported = false;
+      }
       int action = getAction(world);
       int die_roll = randInt(1, 10);
       // int die_roll = 5;
@@ -46,7 +76,8 @@ void Avatar::update(StudentWorld* world) {
         case ACTION_FIRE:
           if (hasVortex()) {
             auto [d_x, d_y] = MOVES[(int)m_walk_direction];
-            world->addActor(new Vortex(m_walk_direction, d_x * 8, d_y * 8));
+            world->addActor(new Vortex(m_walk_direction, getX() + d_x * 8,
+                                       getY() + d_y * 8));
             world->playSound(SOUND_PLAYER_FIRE);
             m_has_vortex = false;
           }
@@ -57,19 +88,21 @@ void Avatar::update(StudentWorld* world) {
       break;
     }
     case WALKING: {
-      if (m_ticks_to_move % 8 == 0) {
+      if (m_ticks_to_move % 8 == 0 && !m_been_forced && !m_teleported) {
         if (world->isAtFork(getX() / 16, getY() / 16, m_walk_direction)) {
           int action = getAction(world);
-          if (action == ACTION_LEFT && world->canMoveLeft(getX(), getY())) {
+          if (action == ACTION_LEFT && world->canMoveLeft(getX() / 16, getY() / 16)) {
             m_walk_direction = WalkDirection::LEFT;
           } else if (action == ACTION_RIGHT &&
-                     world->canMoveRight(getX(), getY())) {
+                     world->canMoveRight(getX() / 16, getY() / 16)) {
             m_walk_direction = WalkDirection::RIGHT;
-          } else if (action == ACTION_UP && world->canMoveUp(getX(), getY())) {
+          } else if (action == ACTION_UP && world->canMoveUp(getX() / 16, getY() / 16)) {
             m_walk_direction = WalkDirection::UP;
           } else if (action == ACTION_DOWN &&
-                     world->canMoveDown(getX(), getY())) {
+                     world->canMoveDown(getX() / 16, getY() / 16)) {
             m_walk_direction = WalkDirection::DOWN;
+          } else if (m_has_moved) {
+            return;
           }
         }
       }
@@ -95,6 +128,9 @@ void Avatar::update(StudentWorld* world) {
       }
       auto [d_x, d_y] = MOVES[(int)m_walk_direction];
       moveTo(getX() + d_x, getY() + d_y);
+      m_has_moved = true;
+      m_swapped = false;
+      m_been_forced = false;
       --m_ticks_to_move;
       if (m_ticks_to_move == 0) {
         m_state = WAITING_TO_ROLL;
@@ -128,40 +164,35 @@ void Avatar::giveVortex() {
 bool Avatar::isWalking() const {
   return m_state == WALKING;
 }
-void Avatar::setWalkDirection(WalkDirection direction) {
+void Avatar::forceDirection(WalkDirection direction) {
   m_walk_direction = direction;
+  m_been_forced = true;
 }
 void Avatar::teleport(int new_x, int new_y) {
   moveTo(new_x, new_y);
+  m_teleported = true;
 }
-void Avatar::swap(Avatar* other) {
-// i. x, y coordinates
-// ii. the number of ticks left that the player has to move before
-// completing their roll
-// iii. the player's walk direction
-// iv. the player's sprite direction
-// v. the player's roll/walk state
-  int tmp_x, tmp_y, tmp_ticks_to_move, tmp_direction;
-  State tmp_state;
-  WalkDirection tmp_walk_direction;
+void Avatar::swapPosition(Avatar* other) {
+  std::swap(m_ticks_to_move, other->m_ticks_to_move);
+  std::swap(m_state, other->m_state);
+  std::swap(m_walk_direction, other->m_walk_direction);
+  std::swap(m_teleported, other->m_teleported);
+  std::swap(m_has_moved, other->m_has_moved);
+  std::swap(m_been_forced, other->m_been_forced);
+  int tmp_x, tmp_y, tmp_direction;
   tmp_x = other->getX();
   tmp_y = other->getY();
-  tmp_ticks_to_move = other->m_ticks_to_move;
-  tmp_direction = other->getDirection();
-  tmp_state = other->m_state;
-  tmp_walk_direction = other->m_walk_direction;
 
   other->moveTo(getX(), getY());
-  other->m_ticks_to_move = m_ticks_to_move;
   other->setDirection(getDirection());
-  other->m_state = m_state;
-  other->m_walk_direction = m_walk_direction;
 
   moveTo(tmp_x, tmp_y);
-  m_ticks_to_move = tmp_ticks_to_move;
   setDirection(tmp_direction);
-  m_state = tmp_state;
-  m_walk_direction = tmp_walk_direction;
+  m_swapped = false;
+  other->m_swapped = true;
+}
+bool Avatar::beenSwapped() const {
+  return m_swapped;
 }
 
 // -------- PEACH --------
@@ -215,8 +246,12 @@ void Square::update(StudentWorld* world) {
 }
 
 void Square::deactivate() {
-  m_hasActivatedOnYoshi = true;
   m_hasActivatedOnPeach = true;
+  m_hasActivatedOnYoshi = true;
+}
+
+bool Square::isGridSquare() const {
+  return true;
 }
 
 // -------- BLUE COIN SQUARE --------
@@ -264,8 +299,8 @@ void StarSquare::effect(StudentWorld* world, Avatar* avatar) {
 
 // -------- DIRECTIONAL SQUARE --------
 
-DirectionalSquare::DirectionalSquare(int imageID, int x, int y, int direction)
-    : Square(imageID, x, y) {
+DirectionalSquare::DirectionalSquare(int x, int y, int direction)
+    : Square(IID_DIR_SQUARE, x, y) {
   setDirection(direction);
   if (direction == GraphObject::right) {
     m_force = WalkDirection::RIGHT;
@@ -282,7 +317,7 @@ DirectionalSquare::DirectionalSquare(int imageID, int x, int y, int direction)
 }
 
 void DirectionalSquare::effect(StudentWorld* world, Avatar* avatar) {
-  avatar->setWalkDirection(m_force);
+  avatar->forceDirection(m_force);
 }
 
 // -------- BANK SQUARE --------
@@ -307,16 +342,48 @@ void BankSquare::effect(StudentWorld* world, Avatar* avatar) {
 EventSquare::EventSquare(int x, int y) : Square(IID_EVENT_SQUARE, x, y) {}
 
 void EventSquare::effect(StudentWorld* world, Avatar* avatar) {
+  if (avatar->beenSwapped() || avatar->remainingSteps() != 0) {
+    return;
+  }
   int event = randInt(1, 3);
   switch (event) {
-    case 1:
-
+    case 1: {
+      auto [x, y] = world->getRandomSquare()->getPosition();
+      avatar->teleport(x, y);
+      world->playSound(SOUND_PLAYER_TELEPORT);
       break;
+    }
     case 2:
+      avatar->swapPosition((avatar == world->getPeach()
+                                ? (Avatar*)world->getYoshi()
+                                : (Avatar*)world->getPeach()));
+      world->playSound(SOUND_PLAYER_TELEPORT);
       break;
     case 3:
+      avatar->giveVortex();
       break;
   }
+}
+
+// -------- DROPPING SQUARE --------
+
+DroppingSquare::DroppingSquare(int x, int y)
+    : Square(IID_DROPPING_SQUARE, x, y) {}
+
+void DroppingSquare::effect(StudentWorld* world, Avatar* avatar) {
+  if (avatar->remainingSteps() != 0) {
+    return;
+  }
+  int action = randInt(1, 2);
+  switch (action) {
+    case 1:
+      avatar->addCoins(std::max(-10, -avatar->getCoins()));
+      break;
+    case 2:
+      avatar->addStars(std::max(-1, -avatar->getCoins()));
+      break;
+  }
+  world->playSound(SOUND_DROPPING_SQUARE_ACTIVATE);
 }
 
 // -------- VORTEX --------
@@ -327,7 +394,8 @@ void Vortex::update(StudentWorld* world) {
   }
   auto [d_x, d_y] = MOVES[(int)m_walk_direction];
   moveTo(getX() + d_x, getY() + d_y);
-  if (getX() >= VIEW_WIDTH || getY() <= VIEW_HEIGHT) {
+  if (getX() <= 0 || getY() <= 0 || getX() >= VIEW_WIDTH ||
+      getY() >= VIEW_HEIGHT) {
     die(world);
   }
   if (world->checkCollision(this)) {
