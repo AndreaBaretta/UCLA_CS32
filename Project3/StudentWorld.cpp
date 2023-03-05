@@ -68,6 +68,7 @@ int StudentWorld::init() {
         case Board::GridEntry::bank_square:
           break;
         case Board::GridEntry::star_square:
+        m_actors.push_back(new StarSquare(x, y));
           break;
         case Board::GridEntry::bowser:
           break;
@@ -132,7 +133,7 @@ void StudentWorld::clearBank() {
   m_bank = 0;
 }
 
-void StudentWorld::addCoins(int coins) {
+void StudentWorld::addToBank(int coins) {
   m_bank += coins;
 }
 
@@ -188,4 +189,33 @@ Peach* StudentWorld::getPeach() const {
 }
 Yoshi* StudentWorld::getYoshi() const {
   return m_yoshi;
+}
+
+bool StudentWorld::checkCollision(Actor* actor) {
+  for (Actor* a : m_actors) {
+    if (a->getX() < actor->getX() + SPRITE_WIDTH &&
+        a->getX() > actor->getX() - SPRITE_WIDTH &&
+        a->getY() < actor->getY() + SPRITE_HEIGHT &&
+        a->getY() > actor->getY() - SPRITE_HEIGHT && a->isImpactible()) {
+      a->impact();
+      return true;
+    }
+  }
+  return false;
+}
+
+void StudentWorld::addActor(Actor* actor) {
+  m_actors.push_back(actor);
+}
+
+bool StudentWorld::isAtFork(int x, int y, WalkDirection direction) {
+  if ((direction == WalkDirection::RIGHT || direction == WalkDirection::LEFT) &&
+      (canMoveDown(x, y) || canMoveUp(x, y))) {
+    return true;
+  } else if ((direction == WalkDirection::UP ||
+              direction == WalkDirection::DOWN) &&
+             (canMoveRight(x, y) || canMoveLeft(x, y))) {
+    return true;
+  }
+  return false;
 }

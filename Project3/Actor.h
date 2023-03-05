@@ -26,6 +26,12 @@
 // const int IID_VORTEX = 11;
 
 class Actor : public GraphObject {
+ public:
+  constexpr const static std::pair<int, int> MOVES[] = {{2, 0},
+                                                        {-2, 0},
+                                                        {0, 2},
+                                                        {0, -2}};
+
  private:
   bool m_alive;
 
@@ -37,15 +43,13 @@ class Actor : public GraphObject {
  public:
   virtual void update(StudentWorld* world) = 0;
   virtual void die(StudentWorld* world);
-  bool isAlive();
+  virtual bool isImpactible() const;
+  virtual void impact();
+  bool isAlive() const;
 };
 
 class Avatar : public Actor {
  public:
-  constexpr const static std::pair<int, int> MOVES[] = {{2, 0},
-                                                        {-2, 0},
-                                                        {0, 2},
-                                                        {0, -2}};
   enum State { WAITING_TO_ROLL, WALKING };
 
  private:
@@ -57,15 +61,7 @@ class Avatar : public Actor {
   bool m_has_vortex;
 
  protected:
-  template <typename... Args>
-  Avatar(int imageID, Args&&... args)
-      : Actor(imageID, std::forward<Args>(args)..., GraphObject::right, 0, 1.0),
-        m_ticks_to_move(0),
-        m_state(WAITING_TO_ROLL),
-        m_walk_direction(WalkDirection::RIGHT),
-        m_coins(0),
-        m_stars(0),
-        m_has_vortex(false) {}
+  Avatar(int imageID, int x, int y);
 
  public:
   virtual int getAction(StudentWorld* world) = 0;
@@ -77,33 +73,31 @@ class Avatar : public Actor {
   void addCoins(int coins);
   void addStars(int stars);
   void giveVortex();
-  const bool isWalking() const;
+  bool isWalking() const;
+  void setWalkDirection(WalkDirection direction);
+  void teleport(int new_x, int new_y);
+  void swap(Avatar* other);
 };
 
 class Peach : public Avatar {
  public:
-  template <typename... Args>
-  Peach(Args&&... args) : Avatar(IID_PEACH, std::forward<Args>(args)...) {}
+  Peach(int x, int y);
   virtual int getAction(StudentWorld* world);
 };
 
 class Yoshi : public Avatar {
  public:
-  template <typename... Args>
-  Yoshi(Args&&... args) : Avatar(IID_YOSHI, std::forward<Args>(args)...) {}
+  Yoshi(int x, int y);
   virtual int getAction(StudentWorld* world);
 };
 
 class Square : public Actor {
- protected:
+ private:
   bool m_hasActivatedOnPeach;
   bool m_hasActivatedOnYoshi;
 
-  template <typename... Args>
-  Square(int imageID, Args&&... args)
-      : Actor(imageID, std::forward<Args>(args)...),
-        m_hasActivatedOnPeach(false),
-        m_hasActivatedOnYoshi(false) {}
+ protected:
+  Square(int imageID, int x, int y);
 
  public:
   bool isOn(Avatar* avatar);
@@ -115,13 +109,7 @@ class Square : public Actor {
 
 class BlueCoinSquare : public Square {
  public:
-  template <typename... Args>
-  BlueCoinSquare(Args&&... args)
-      : Square(IID_BLUE_COIN_SQUARE,
-               std::forward<Args>(args)...,
-               GraphObject::right,
-               1,
-               1.0) {}
+  BlueCoinSquare(int x, int y);
 
   virtual void effect(StudentWorld* world, Avatar* avatar);
 
@@ -130,15 +118,56 @@ class BlueCoinSquare : public Square {
 
 class RedCoinSquare : public Square {
  public:
-  template <typename... Args>
-  RedCoinSquare(Args&&... args)
-      : Square(IID_RED_COIN_SQUARE,
-               std::forward<Args>(args)...,
-               GraphObject::right,
-               1,
-               1.0) {}
+  RedCoinSquare(int x , int y);
 
-  void effect(StudentWorld* world, Avatar* avatar);
+  virtual void effect(StudentWorld* world, Avatar* avatar);
+};
+
+class StarSquare : public Square {
+ public:
+  StarSquare(int x, int y);
+
+  virtual void effect(StudentWorld* world, Avatar* avatar);
+};
+
+class DirectionalSquare : public Square {
+ private:
+  WalkDirection m_force;
+
+ public:
+  DirectionalSquare(int imageID, int x, int y, int direction);
+
+  virtual void effect(StudentWorld* world, Avatar* avatar);
+};
+
+class BankSquare : public Square {
+ public:
+  BankSquare(int x, int y);
+
+  virtual void effect(StudentWorld* world, Avatar* avatar);
+};
+
+class EventSquare : public Square {
+ public:
+  EventSquare(int x, int y);
+
+  virtual void effect(StudentWorld* world, Avatar* avatar);
+};
+
+class Vortex : public Actor {
+ private:
+  const WalkDirection m_walk_direction;
+
+ public:
+  Vortex(WalkDirection direction, int x, int y)
+      : Actor(IID_VORTEX,
+              x, y,
+              GraphObject::right,
+              0,
+              1.0),
+        m_walk_direction(direction) {}
+
+  virtual void update(StudentWorld* world);
 };
 
 #endif  // ACTOR_H_

@@ -29,7 +29,7 @@ class StudentWorld : public GameWorld {
   virtual void cleanUp();
   int getBank() const;
   void clearBank();
-  void addCoins(int coins);
+  void addToBank(int coins);
   bool canMoveInDirection(int x, int y, WalkDirection direction);
   bool canMoveRight(int x, int y);
   bool canMoveLeft(int x, int y);
@@ -37,6 +37,9 @@ class StudentWorld : public GameWorld {
   bool canMoveDown(int x, int y);
   Peach* getPeach() const;
   Yoshi* getYoshi() const;
+  bool checkCollision(Actor* actor);
+  void addActor(Actor* actor);
+  bool isAtFork(int x, int y, WalkDirection direction);
 };
 
 #endif  // STUDENTWORLD_H_
