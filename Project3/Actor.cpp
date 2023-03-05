@@ -91,15 +91,21 @@ void Avatar::update(StudentWorld* world) {
       if (m_ticks_to_move % 8 == 0 && !m_been_forced && !m_teleported) {
         if (world->isAtFork(getX() / 16, getY() / 16, m_walk_direction)) {
           int action = getAction(world);
-          if (action == ACTION_LEFT && world->canMoveLeft(getX() / 16, getY() / 16)) {
+          if (action == ACTION_LEFT &&
+              world->canMoveLeft(getX() / 16, getY() / 16) &&
+              m_walk_direction != WalkDirection::RIGHT) {
             m_walk_direction = WalkDirection::LEFT;
           } else if (action == ACTION_RIGHT &&
-                     world->canMoveRight(getX() / 16, getY() / 16)) {
+                     world->canMoveRight(getX() / 16, getY() / 16) &&
+                     m_walk_direction != WalkDirection::LEFT) {
             m_walk_direction = WalkDirection::RIGHT;
-          } else if (action == ACTION_UP && world->canMoveUp(getX() / 16, getY() / 16)) {
+          } else if (action == ACTION_UP &&
+                     world->canMoveUp(getX() / 16, getY() / 16) &&
+                     m_walk_direction != WalkDirection::DOWN) {
             m_walk_direction = WalkDirection::UP;
           } else if (action == ACTION_DOWN &&
-                     world->canMoveDown(getX() / 16, getY() / 16)) {
+                     world->canMoveDown(getX() / 16, getY() / 16) &&
+                     m_walk_direction != WalkDirection::UP) {
             m_walk_direction = WalkDirection::DOWN;
           } else if (m_has_moved) {
             return;
