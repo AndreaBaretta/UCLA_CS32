@@ -42,12 +42,13 @@ class Actor : public GraphObject {
 
  public:
   virtual void update(StudentWorld* world) = 0;
-  virtual void die(StudentWorld* world);
+  void die();
   virtual bool isImpactible() const;
-  virtual void impact();
+  virtual void impact(StudentWorld* world);
   virtual bool isGridSquare() const;
   bool isAlive() const;
   std::pair<int, int> getPosition() const;
+  static bool coincident(Actor* a, Actor* b);
 };
 
 class Avatar : public Actor {
@@ -84,6 +85,8 @@ class Avatar : public Actor {
   void teleport(int new_x, int new_y);
   void swapPosition(Avatar* other);
   bool beenSwapped() const;
+  static void swapCoins(Avatar* a, Avatar* b);
+  static void swapStars(Avatar* a, Avatar* b);
 };
 
 class Peach : public Avatar {
@@ -107,7 +110,6 @@ class Square : public Actor {
   Square(int imageID, int x, int y);
 
  public:
-  bool isOn(Avatar* avatar);
   // Calling effect does not consider whether or not the square's effects are
   // for transient avatars or one that finish their roll there
   virtual void update(StudentWorld* world);
@@ -121,8 +123,6 @@ class BlueCoinSquare : public Square {
   BlueCoinSquare(int x, int y);
 
   virtual void effect(StudentWorld* world, Avatar* avatar);
-
-  virtual void die(StudentWorld* world);
 };
 
 class RedCoinSquare : public Square {
@@ -180,6 +180,48 @@ class Vortex : public Actor {
         m_walk_direction(direction) {}
 
   virtual void update(StudentWorld* world);
+};
+
+class Baddie : public Actor {
+ public:
+  enum State { PAUSED, WALKING };
+
+ private:
+  int m_ticks_to_move;
+  int m_idle_counter;
+  bool m_hasActivatedOnPeach;
+  bool m_hasActivatedOnYoshi;
+  State m_state;
+  WalkDirection m_walk_direction;
+
+ protected:
+  Baddie(int imageID, int x, int y);
+
+ public:
+  virtual void update(StudentWorld* world);
+  virtual int rollSquares() = 0;
+  virtual void playerEffect(StudentWorld* world, Avatar* avatar) = 0;
+  virtual void gridEffect(StudentWorld* world) = 0;
+  virtual bool isImpactible() const;
+  virtual void impact(StudentWorld* world);
+};
+
+class Bowser : public Baddie {
+ public:
+  Bowser(int x, int y);
+
+  virtual int rollSquares();
+  virtual void playerEffect(StudentWorld* world, Avatar* avatar);
+  virtual void gridEffect(StudentWorld* world);
+};
+
+class Boo : public Baddie {
+ public:
+  Boo(int x, int y);
+
+  virtual int rollSquares();
+  virtual void playerEffect(StudentWorld* world, Avatar* avatar);
+  virtual void gridEffect(StudentWorld* world);
 };
 
 #endif  // ACTOR_H_

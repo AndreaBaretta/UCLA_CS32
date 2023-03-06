@@ -7,7 +7,7 @@
 
 // -------- ACTOR --------
 
-void Actor::die(StudentWorld* world) {
+void Actor::die() {
   m_alive = false;
 }
 
@@ -15,7 +15,7 @@ bool Actor::isImpactible() const {
   return false;
 }
 
-void Actor::impact() {}
+void Actor::impact(StudentWorld* world) {}
 
 bool Actor::isGridSquare() const {
   return false;
@@ -27,6 +27,10 @@ bool Actor::isAlive() const {
 
 std::pair<int, int> Actor::getPosition() const {
   return {getX(), getY()};
+}
+
+bool Actor::coincident(Actor* a, Actor* b) {
+  return a->getPosition() == b->getPosition();
 }
 
 // -------- AVATAR --------
@@ -48,26 +52,15 @@ void Avatar::update(StudentWorld* world) {
   switch (m_state) {
     case WAITING_TO_ROLL: {
       if (m_teleported) {
-        std::vector<WalkDirection> valid_directions(4);
-        if (world->canMoveUp(getX(), getY())) {
-          valid_directions.push_back(WalkDirection::UP);
-        }
-        if (world->canMoveDown(getX(), getY())) {
-          valid_directions.push_back(WalkDirection::DOWN);
-        }
-        if (world->canMoveRight(getX(), getY())) {
-          valid_directions.push_back(WalkDirection::RIGHT);
-        }
-        if (world->canMoveLeft(getX(), getY())) {
-          valid_directions.push_back(WalkDirection::LEFT);
-        }
+        std::vector<WalkDirection> valid_directions =
+            world->validDirections(getX() / 16, getY() / 16);
         m_walk_direction =
-            valid_directions[randInt(1, valid_directions.size() - 1)];
+            valid_directions[randInt(0, valid_directions.size() - 1)];
         m_teleported = false;
       }
       int action = getAction(world);
       int die_roll = randInt(1, 10);
-      // int die_roll = 5;
+      // int die_roll = 1;
       switch (action) {
         case ACTION_ROLL:
           m_ticks_to_move = 8 * die_roll;
@@ -200,6 +193,13 @@ void Avatar::swapPosition(Avatar* other) {
 bool Avatar::beenSwapped() const {
   return m_swapped;
 }
+void Avatar::swapCoins(Avatar* a, Avatar* b) {
+  std::swap(a->m_coins, b->m_coins);
+}
+
+void Avatar::swapStars(Avatar* a, Avatar* b) {
+  std::swap(a->m_stars, b->m_stars);
+}
 
 // -------- PEACH --------
 
@@ -224,15 +224,11 @@ Square::Square(int imageID, int x, int y)
       m_hasActivatedOnPeach(false),
       m_hasActivatedOnYoshi(false) {}
 
-bool Square::isOn(Avatar* avatar) {
-  return avatar->getX() == getX() && avatar->getY() == getY();
-}
-
 void Square::update(StudentWorld* world) {
   if (!isAlive()) {
     return;
   }
-  if (isOn(world->getPeach())) {
+  if (coincident(this, world->getPeach())) {
     if (!m_hasActivatedOnPeach) {
       effect(world, world->getPeach());
       m_hasActivatedOnPeach = true;
@@ -241,7 +237,7 @@ void Square::update(StudentWorld* world) {
     m_hasActivatedOnPeach = false;
   }
 
-  if (isOn(world->getYoshi())) {
+  if (coincident(this, world->getYoshi())) {
     if (!m_hasActivatedOnYoshi) {
       effect(world, world->getYoshi());
       m_hasActivatedOnYoshi = true;
@@ -271,11 +267,6 @@ void BlueCoinSquare::effect(StudentWorld* world, Avatar* avatar) {
   }
   avatar->addCoins(3);
   world->playSound(SOUND_GIVE_COIN);
-}
-
-void BlueCoinSquare::die(StudentWorld* world) {
-  world->addActor(new RedCoinSquare(getX(), getY()));
-  Square::die(world);
 }
 
 // -------- RED COIN SQUARE --------
@@ -402,10 +393,153 @@ void Vortex::update(StudentWorld* world) {
   moveTo(getX() + d_x, getY() + d_y);
   if (getX() <= 0 || getY() <= 0 || getX() >= VIEW_WIDTH ||
       getY() >= VIEW_HEIGHT) {
-    die(world);
+    die();
   }
   if (world->checkCollision(this)) {
-    die(world);
+    die();
     world->playSound(SOUND_HIT_BY_VORTEX);
   }
 }
+
+// -------- BADDIE --------
+
+Baddie::Baddie(int imageID, int x, int y)
+    : Actor(imageID, x, y, GraphObject::right, 0, 1.0),
+      m_ticks_to_move(0),
+      m_idle_counter(180),
+      m_state(PAUSED),
+      m_walk_direction(WalkDirection::RIGHT),
+      m_hasActivatedOnPeach(false),
+      m_hasActivatedOnYoshi(false) {}
+
+void Baddie::update(StudentWorld* world) {
+  switch (m_state) {
+    case PAUSED: {
+      if (world->getPeach()->remainingSteps() == 0 &&
+          coincident(this, world->getPeach())) {
+        if (!m_hasActivatedOnPeach) {
+          playerEffect(world, world->getPeach());
+          m_hasActivatedOnPeach = true;
+        }
+      } else {
+        m_hasActivatedOnPeach = false;
+      }
+
+      if (world->getYoshi()->remainingSteps() == 0 &&
+          coincident(this, world->getYoshi())) {
+        if (!m_hasActivatedOnYoshi) {
+          playerEffect(world, world->getYoshi());
+          m_hasActivatedOnYoshi = true;
+        }
+      } else {
+        m_hasActivatedOnYoshi = false;
+      }
+      --m_idle_counter;
+      if (m_idle_counter == 0) {
+        m_ticks_to_move = rollSquares() * 8;
+
+        std::vector<WalkDirection> valid_directions =
+            world->validDirections(getX() / 16, getY() / 16);
+        int r = randInt(0, valid_directions.size() - 1);
+
+        m_walk_direction =
+            valid_directions[r];
+
+        m_state = WALKING;
+      } else {
+        break;
+      }
+    }
+    case WALKING:
+      if (world->isAtFork(getX() / 16, getY() / 16, m_walk_direction) &&
+      m_ticks_to_move % 8 == 0) {
+        std::vector<WalkDirection> valid_directions =
+            world->validDirections(getX() / 16, getY() / 16);
+        int r = randInt(0, valid_directions.size() - 1);
+
+        m_walk_direction =
+            valid_directions[r];
+      }
+
+      if (!world->canMoveInDirection(getX() / 16, getY() / 16,
+                                     m_walk_direction) &&
+          m_ticks_to_move % 8 == 0) {
+        if (m_walk_direction == WalkDirection::RIGHT ||
+            m_walk_direction == WalkDirection::LEFT) {
+          m_walk_direction = world->canMoveUp(getX() / 16, getY() / 16)
+                                 ? WalkDirection::UP
+                                 : WalkDirection::DOWN;
+        } else {
+          m_walk_direction = world->canMoveRight(getX() / 16, getY() / 16)
+                                 ? WalkDirection::RIGHT
+                                 : WalkDirection::LEFT;
+        }
+      }
+      if (m_walk_direction == WalkDirection::LEFT) {
+        setDirection(GraphObject::left);
+      } else {
+        setDirection(GraphObject::right);
+      }
+      auto [d_x, d_y] = MOVES[(int)m_walk_direction];
+      moveTo(getX() + d_x, getY() + d_y);
+      --m_ticks_to_move;
+      if (m_ticks_to_move == 0) {
+        m_state = PAUSED;
+        m_idle_counter = 180;
+        gridEffect(world);
+      }
+      break;
+  }
+}
+
+bool Baddie::isImpactible() const {
+  return true;
+}
+
+void Baddie::impact(StudentWorld* world) {
+  auto [x, y] = world->getRandomSquare()->getPosition();
+  moveTo(x, y);
+  m_walk_direction = WalkDirection::RIGHT;
+  m_state = PAUSED;
+  m_idle_counter = 180;
+}
+
+// -------- BOWSER --------
+
+Bowser::Bowser(int x, int y) : Baddie(IID_BOWSER, x, y) {}
+
+int Bowser::rollSquares() {
+  return randInt(1, 10);
+}
+
+void Bowser::playerEffect(StudentWorld* world, Avatar* avatar) {
+  if (randInt(0, 1)) {
+    avatar->addCoins(-avatar->getCoins());
+    avatar->addStars(-avatar->getStars());
+    world->playSound(SOUND_BOWSER_ACTIVATE);
+  }
+}
+
+void Bowser::gridEffect(StudentWorld* world) {
+  if (randInt(0, 3) == 0) {
+    world->addActor(new DroppingSquare(getX(), getY()));
+    world->getSquare(getX() / 16, getY() / 16)->die();
+    world->playSound(SOUND_DROPPING_SQUARE_CREATED);
+  }
+}
+
+// -------- BOO --------
+
+Boo::Boo(int x, int y) : Baddie(IID_BOO, x, y) {}
+
+int Boo::rollSquares() {
+  return randInt(1, 3);
+}
+
+void Boo::playerEffect(StudentWorld* world, Avatar* avatar) {
+  randInt(1, 2) == 1 ? Avatar::swapCoins(world->getPeach(), world->getYoshi())
+                     : Avatar::swapStars(world->getPeach(), world->getYoshi());
+  world->playSound(SOUND_BOO_ACTIVATE);
+}
+
+void Boo::gridEffect(StudentWorld* world) {}

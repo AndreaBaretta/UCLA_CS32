@@ -4,20 +4,19 @@
 #include "Actor.h"
 #include "Board.h"
 #include "GameConstants.h"
-using namespace std;
 
 const int GraphObject::left;
 const int GraphObject::right;
 const int GraphObject::up;
 const int GraphObject::down;
 
-GameWorld* createStudentWorld(string assetPath) {
+GameWorld* createStudentWorld(std::string assetPath) {
   return new StudentWorld(assetPath);
 }
 
 // Students:  Add code to this file, StudentWorld.h, Actor.h, and Actor.cpp
 
-StudentWorld::StudentWorld(string assetPath)
+StudentWorld::StudentWorld(std::string assetPath)
     : GameWorld(assetPath),
       m_board(),
       m_peach(nullptr),
@@ -77,9 +76,11 @@ int StudentWorld::init() {
           m_actors.push_back(new StarSquare(x, y));
           break;
         case Board::GridEntry::bowser:
+          m_actors.push_back(new Bowser(x, y));
           m_actors.push_back(new BlueCoinSquare(x, y));
           break;
         case Board::GridEntry::boo:
+          m_actors.push_back(new Boo(x, y));
           m_actors.push_back(new BlueCoinSquare(x, y));
           break;
         default:
@@ -88,7 +89,7 @@ int StudentWorld::init() {
     }
   }
 
-  startCountdownTimer(99);
+  startCountdownTimer(9999);
 
   return GWSTATUS_CONTINUE_GAME;
 }
@@ -102,10 +103,14 @@ int StudentWorld::move() {
   //   a->update(this);
   // }
 
-  for (vector<Actor*>::iterator it = m_actors.begin(); it != m_actors.end();) {
+  for (std::list<Actor*>::iterator it = m_actors.begin(); it != m_actors.end();) {
     (*it)->update(this);
+    ++it;
+  }
+
+  for (std::list<Actor*>::iterator it = m_actors.begin(); it != m_actors.end();) {
     if (!(*it)->isAlive()) {
-      (*it)->die(this);
+      (*it)->die();
       delete *it;
       it = m_actors.erase(it);
     } else {
@@ -113,10 +118,10 @@ int StudentWorld::move() {
     }
   }
 
-  setGameStatText("P1 Roll: "s + std::to_string(m_peach->remainingSteps()) +
+  setGameStatText(std::string("P1 Roll: ") + std::to_string(m_peach->remainingSteps()) +
                   " Stars: " + std::to_string(m_peach->getStars()) +
-                  " $$: " + std::to_string(m_peach->getCoins()) + " " +
-                  (m_peach->hasVortex() ? "VOR" : "") +
+                  " $$: " + std::to_string(m_peach->getCoins()) +
+                  (m_peach->hasVortex() ? " VOR" : "") +
                   " | Time: " + std::to_string(timeRemaining()) +
                   " | Bank: " + std::to_string(getBank()) +
                   " | P2 Roll: " + std::to_string(m_yoshi->remainingSteps()) +
@@ -216,7 +221,7 @@ bool StudentWorld::checkCollision(Actor* actor) {
                               a->getX() > actor->getX() - SPRITE_WIDTH &&
                               a->getY() < actor->getY() + SPRITE_HEIGHT &&
                               a->getY() > actor->getY() - SPRITE_HEIGHT)) {
-      a->impact();
+      a->impact(this);
       return true;
     }
   }
@@ -250,10 +255,39 @@ bool StudentWorld::isAtFork(int x, int y, WalkDirection direction) {
   return i >= 2;
 }
 
+Actor* StudentWorld::getSquare(int x, int y) {
+  for (Actor* a : m_actors) {
+    if (a->isGridSquare() && a->getX()/16 == x && a->getY()/16 == y) {
+      return a;
+    }
+  }
+  return nullptr;
+}
+
 Actor* StudentWorld::getRandomSquare() {
   int i;
+  std::list<Actor*>::const_iterator it;
   do {
     i = randInt(0, m_actors.size() - 1);
-  } while (!m_actors[i]->isGridSquare());
-  return m_actors[i];
+    it = m_actors.cbegin();
+    std::advance(it, i);
+  } while (!(*it)->isGridSquare());
+  return *it;
+}
+
+std::vector<WalkDirection> StudentWorld::validDirections(int x, int y) {
+  std::vector<WalkDirection> valid_directions;
+  if (canMoveUp(x, y)) {
+    valid_directions.push_back(WalkDirection::UP);
+  }
+  if (canMoveDown(x, y)) {
+    valid_directions.push_back(WalkDirection::DOWN);
+  }
+  if (canMoveRight(x, y)) {
+    valid_directions.push_back(WalkDirection::RIGHT);
+  }
+  if (canMoveLeft(x, y)) {
+    valid_directions.push_back(WalkDirection::LEFT);
+  }
+  return valid_directions;
 }

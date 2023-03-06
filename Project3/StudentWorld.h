@@ -2,7 +2,7 @@
 #define STUDENTWORLD_H_
 
 #include <string>
-#include <vector>
+#include <list>
 #include "Board.h"
 #include "GameWorld.h"
 #include "GraphObject.h"
@@ -19,7 +19,7 @@ class StudentWorld : public GameWorld {
   Board m_board;
   Peach* m_peach;
   Yoshi* m_yoshi;
-  std::vector<Actor*> m_actors;
+  std::list<Actor*> m_actors;
   int m_bank;
 
  public:
@@ -40,7 +40,9 @@ class StudentWorld : public GameWorld {
   bool checkCollision(Actor* actor);
   void addActor(Actor* actor);
   bool isAtFork(int x, int y, WalkDirection direction);
+  Actor* getSquare(int x, int y);
   Actor* getRandomSquare();
+  std::vector<WalkDirection> validDirections(int x, int y);
 };
 
 #endif  // STUDENTWORLD_H_
