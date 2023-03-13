@@ -94,13 +94,7 @@ inline bool compareStudentPtr(const Student* lhs, const Student* rhs) {
 
   // Just so this will compile for now, we'll pretend every comparison
   // results in a tie, so there's no preferred ordering.
-  if (lhs->gpa > rhs->gpa) {
-    return true;
-  }
-  if (lhs->gpa < rhs->gpa) {
-    return false;
-  }
-  return lhs->id < rhs->id;
+  return compareStudent(*lhs, *rhs);
 }
 
 // template <typename T>
@@ -313,7 +307,7 @@ void sortUsingPtrs(vector<Student>& students,
   // TODO:  Sort the vector of pointers using the STL sort algorithm
   //        with the comp parameter as the ordering relationship.
 
-  sort(sp.begin(), sp.end(), compareStudentPtr);
+  sort(sp.begin(), sp.end(), comp);
 
   // TODO:  Using the now-sorted vector of pointers, replace each Student
   //        in students with the Students from auxStudents in the correct

@@ -69,20 +69,6 @@ class Set {
     // Return pointer to first Node whose m_value >= value if present,
     // else m_head
 };
-
-// Declarations of non-member functions
-template <typename ItemType>
-void unite(const Set<ItemType>& s1,
-           const Set<ItemType>& s2,
-           Set<ItemType>& result);
-// result = { x | (x in s1) OR (x in s2) }
-
-template <typename ItemType>
-void butNot(const Set<ItemType>& s1,
-            const Set<ItemType>& s2,
-            Set<ItemType>& result);
-// result = { x | (x in s1) AND NOT (x in s2) }
-
 // Inline implementations
 
 template <typename ItemType>
