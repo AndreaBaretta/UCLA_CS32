@@ -2,12 +2,13 @@
 #define TREEMULTIMAP_INCLUDED
 
 #include <list>
+#include <iostream>
 
 template <typename KeyType, typename ValueType>
 class TreeMultimap {
  private:
-  constexpr const bool RED = true;
-  constexpr const bool BLACK = false;
+  static constexpr const bool RED = true;
+  static constexpr const bool BLACK = false;
   struct RBNode {
     const KeyType key;
     std::list<ValueType> values;
@@ -22,36 +23,40 @@ class TreeMultimap {
  public:
   class Iterator {
    private:
-    std::list<ValueType>::iterator it;
+    RBNode* p;
+    typename std::list<ValueType>::iterator it;
 
    public:
-    Iterator(RBNode* p) {
-      // Replace this line with correct code.
-      it = p->values.begin();
-
+    Iterator(RBNode* p) : p(p) {
+      if (p != nullptr) {
+        it = p->values.begin();
+      }
+      // it = p->values.begin();
     }
 
     ValueType& get_value() const {
-      return *it;  // Replace this line with correct code.
+      return *it;
     }
 
     bool is_valid() const {
-      it->;  // Replace this line with correct code.
+      if (p == nullptr) {
+        return false;
+      }
+      return it != p->values.end();
     }
 
     void advance() {
       // Replace this line with correct code.
+      if (is_valid()) { ++it; }
     }
-
-   private:
   };
 
-  TreeMultimap() : RBNode(nullptr) {}
+  TreeMultimap() : root(nullptr) {}
 
   ~TreeMultimap() { free(root); }
 
   void insert(const KeyType& key, const ValueType& value) {
-    insert(key, value, root);
+    root = insert(key, value, root);
     root->color = BLACK;
   }
 
@@ -68,7 +73,9 @@ class TreeMultimap {
   }
 
   Iterator find(const KeyType& key, RBNode* p) const {
-    if (p->key < key) {
+    if (p == nullptr) {
+      return Iterator(p);
+    } else if (p->key < key) {
       return find(key, p->right);
     } else if (p->key > key) {
       return find(key, p->left);
@@ -80,8 +87,8 @@ class TreeMultimap {
     RBNode* x = p->right;
     p->right = x->left;
     x->left = p;
-    x.color = p.color;
-    p.color = RED;
+    x->color = p->color;
+    p->color = RED;
     return x;
   }
 
@@ -89,8 +96,8 @@ class TreeMultimap {
     RBNode* x = p->left;
     p->left = x->right;
     x->right = p;
-    x.color = p.color;
-    p.color = RED;
+    x->color = p->color;
+    p->color = RED;
     return x;
   }
 
@@ -105,28 +112,57 @@ class TreeMultimap {
     return p->color;
   }
 
-  RBNode* insert(const KeyType& key, const ValueType& value, const RBNode* p) {
+  RBNode* insert(const KeyType& key, const ValueType& value, RBNode* p) {
     if (p == nullptr) {
-      new RBNode(key, value);
+      return new RBNode(key, value);
     }
-    if (isRed(p.left) && isRed(p.right)) {
+    if (isRed(p->left) && isRed(p->right)) {
       colorFlip(p);
     }
-    int cmp = key.compareTo(p.key);
-    if (key == p.key) {
-      p->values->insert(p.end(), value);
-    } else if (key < h.key) {
-      p.left = insert(p.left, key, value);
+    if (key == p->key) {
+      p->values.insert(p->values.end(), value);
+    } else if (key < p->key) {
+      p->left = insert(key, value, p->left);
     } else {
-      p.right = insert(p.right, key, value);
+      p->right = insert(key, value, p->right);
     }
-    if (isRed(p.right) && !isRed(p.left)) {
+    if (isRed(p->right) && !isRed(p->left)) {
       p = rotateLeft(p);
     }
-    if (isRed(p.left) && isRed(p.left.left)) {
+    if (isRed(p->left) && isRed(p->left->left)) {
       p = rotateRight(p);
     }
     return p;
+  }
+
+  void print(RBNode* p, int dist) {// TODO: Maybe delete this
+    if (p == nullptr) { return; }
+    std::cout << p->key << " (" << dist << ")" << std::endl;
+    print(p->left, dist+1);
+    print(p->right, dist+1);
+  }
+
+  void printBlackDist(RBNode* p, int dist) {// TODO: Maybe delete this
+    if (p == nullptr) {
+      std::cout << dist << ",";
+    } else {
+      if (!isRed(p)) {
+        dist++;
+      }
+      printBlackDist(p->left, dist);
+      printBlackDist(p->right, dist);
+    }
+  }
+
+ public: // TODO: Maybe delete this
+
+  void print() {// TODO: Maybe delete this
+    print(root, 0);
+  }
+
+  void printBlackDist() {// TODO: Maybe delete this
+    printBlackDist(root, 1);
+    std::cout << std::endl;
   }
 };
 
