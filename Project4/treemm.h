@@ -1,9 +1,16 @@
 #ifndef TREEMULTIMAP_INCLUDED
 #define TREEMULTIMAP_INCLUDED
 
-#include <list>
 #include <iostream>
+#include <list>
 
+/**
+ * Citation: The following implementation of red black tree is based on the data
+ * structure by Pf. Robert Sedgewick presented in his article "Left-leaning
+ * Red-Black Trees."
+ * The article can be found here:
+ * https://sedgewick.io/wp-content/themes/sedgewick/papers/2008LLRB.pdf
+ */
 template <typename KeyType, typename ValueType>
 class TreeMultimap {
  private:
@@ -34,9 +41,7 @@ class TreeMultimap {
       // it = p->values.begin();
     }
 
-    ValueType& get_value() const {
-      return *it;
-    }
+    ValueType& get_value() const { return *it; }
 
     bool is_valid() const {
       if (p == nullptr) {
@@ -47,7 +52,9 @@ class TreeMultimap {
 
     void advance() {
       // Replace this line with correct code.
-      if (is_valid()) { ++it; }
+      if (is_valid()) {
+        ++it;
+      }
     }
   };
 
@@ -104,11 +111,13 @@ class TreeMultimap {
   void colorFlip(RBNode* p) {
     p->color = !p->color;
     p->left->color = !p->left->color;
-    p->right->color =!p->right->color;
+    p->right->color = !p->right->color;
   }
 
   bool isRed(RBNode* p) {
-    if (p == nullptr) { return false; }
+    if (p == nullptr) {
+      return false;
+    }
     return p->color;
   }
 
@@ -135,14 +144,16 @@ class TreeMultimap {
     return p;
   }
 
-  void print(RBNode* p, int dist) {// TODO: Maybe delete this
-    if (p == nullptr) { return; }
+  void print(RBNode* p, int dist) {  // TODO: Maybe delete this
+    if (p == nullptr) {
+      return;
+    }
     std::cout << p->key << " (" << dist << ")" << std::endl;
-    print(p->left, dist+1);
-    print(p->right, dist+1);
+    print(p->left, dist + 1);
+    print(p->right, dist + 1);
   }
 
-  void printBlackDist(RBNode* p, int dist) {// TODO: Maybe delete this
+  void printBlackDist(RBNode* p, int dist) {  // TODO: Maybe delete this
     if (p == nullptr) {
       std::cout << dist << ",";
     } else {
@@ -154,13 +165,12 @@ class TreeMultimap {
     }
   }
 
- public: // TODO: Maybe delete this
-
-  void print() {// TODO: Maybe delete this
+ public:          // TODO: Maybe delete this
+  void print() {  // TODO: Maybe delete this
     print(root, 0);
   }
 
-  void printBlackDist() {// TODO: Maybe delete this
+  void printBlackDist() {  // TODO: Maybe delete this
     printBlackDist(root, 1);
     std::cout << std::endl;
   }

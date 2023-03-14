@@ -8,8 +8,8 @@
 class User;
 
 class UserDatabase {
- public: //TODO: change back to private
-  std::vector<User*> users;
+ private: //TODO: change back to private
+  std::list<User*> users;
   TreeMultimap<std::string, User*> map;
  public:
   UserDatabase();

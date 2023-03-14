@@ -1,9 +1,11 @@
+#include <chrono>
 #include <filesystem>
 #include <iostream>
-#include <chrono>
-#include "treemm.h"
-#include "UserDatabase.h"
+#include "Movie.h"
+#include "MovieDatabase.h"
 #include "User.h"
+#include "UserDatabase.h"
+#include "treemm.h"
 
 int main() {
   // TreeMultimap<std::string, int> tmm;
@@ -24,14 +26,34 @@ int main() {
 
   UserDatabase db;
   std::chrono::time_point t1 = std::chrono::high_resolution_clock::now();
-  std::cout << (db.load(std::filesystem::current_path() / "users.txt") ? "Successfully loaded user database." : "Error loading users.") << std::endl;
+  std::cout << (db.load(std::filesystem::current_path() / "users.txt")
+                    ? "Successfully loaded user database."
+                    : "Error loading users.")
+            << std::endl;
   std::chrono::time_point t2 = std::chrono::high_resolution_clock::now();
 
   std::chrono::duration<double, std::milli> db_loading = t2 - t1;
-  std::cout << "Time to load: " << db_loading.count() << " ms" << std::endl;
+  std::cout << "Time to load users: " << db_loading.count() << " ms" << std::endl;
   // db.map.printBlackDist();
   User* user = db.get_user_from_email("KDo04@inbox.com");
   std::cout << user->get_email() << std::endl;
   std::cout << user->get_full_name() << std::endl;
   std::cout << user->get_watch_history().size() << std::endl;
+
+  MovieDatabase m_db;
+  t1 = std::chrono::high_resolution_clock::now();
+  std::cout << (m_db.load(std::filesystem::current_path() / "movies.txt")
+                    ? "Successfully loaded movie database."
+                    : "Error loading movies.")
+            << std::endl;
+  t2 = std::chrono::high_resolution_clock::now();
+  db_loading = t2 - t1;
+  std::cout << "Time to load movies: " << db_loading.count() << " ms" << std::endl;
+
+  std::vector<Movie*> movies = m_db.get_movies_with_actor("Will Smith");
+  std::cout << "Bruce Willis movies: [";
+  for (Movie* m : movies) {
+    std::cout << m->get_title() << ",";
+  }
+  std::cout << "]" << std::endl;
 }

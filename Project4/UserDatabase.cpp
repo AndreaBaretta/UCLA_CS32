@@ -1,7 +1,6 @@
 #include "UserDatabase.h"
 #include <fstream>
 #include <iostream>
-#include <sstream>
 #include <string>
 #include <vector>
 #include "User.h"
@@ -20,22 +19,10 @@ bool UserDatabase::load(const string& filename) {
   std::string s_num_movies;
   int num_movies;
   while (std::getline(file, full_name)) {
-    // std::istringstream iss(line);
-    // if (!(iss >> full_name)) {
-    //   file.close();
-    //   return false;
-    // }
-
     if (!std::getline(file, email)) {
       file.close();
       return false;
     }
-    // iss.str(line);
-    // if (!(iss >> email)) {
-    //   file.close();
-    //   return false;
-    // }
-
     if (!std::getline(file, s_num_movies)) {
       file.close();
       return false;
@@ -45,13 +32,6 @@ bool UserDatabase::load(const string& filename) {
       file.close();
       return false;
     }
-
-    // std::getline(file, line);
-    // iss.str(line);
-    // if (!(iss >> num_movies)) {
-    //   file.close();
-    //   return false;
-    // }
 
     std::vector<std::string> watch_history(num_movies);
     for (int i = 0; i < num_movies; ++i) {
@@ -72,11 +52,11 @@ bool UserDatabase::load(const string& filename) {
     map.insert(new_user->get_email(), new_user);
   }
   file.close();
-  return true;  // Replace this line with correct code.
+  return true;
 }
 
 User* UserDatabase::get_user_from_email(const string& email) const {
-  const TreeMultimap<std::string, User*>::Iterator it = map.find(email);
+  const auto it = map.find(email);
   return it.is_valid() ? it.get_value() : nullptr;
 }
 
