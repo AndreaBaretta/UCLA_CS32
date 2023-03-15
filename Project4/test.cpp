@@ -28,12 +28,12 @@ int main() {
   //   cout << "laura is not in the multimap!\n";
 
   UserDatabase u_db;
-  chrono::time_point t1 = chrono::high_resolution_clock::now();
+  auto t1 = chrono::high_resolution_clock::now();
   cout << (u_db.load(filesystem::current_path() / "users.txt")
                     ? "Successfully loaded user database."
                     : "Error loading users.")
             << endl;
-  chrono::time_point t2 = chrono::high_resolution_clock::now();
+  auto t2 = chrono::high_resolution_clock::now();
 
   chrono::duration<double, milli> time_milli = t2 - t1;
   cout << "Time to load users: " << time_milli.count() << " ms" << endl;
