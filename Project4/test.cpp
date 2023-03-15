@@ -64,7 +64,7 @@ int main() {
   Recommender rec(u_db, m_db);
   cout << "Recommendations for " << user->get_email() << endl;
   t1 = chrono::high_resolution_clock::now();
-  vector<MovieAndRank> recommendations = rec.recommend_movies(user->get_email(), 100);
+  vector<MovieAndRank> recommendations = rec.recommend_movies(user->get_email(), 1000);
   t2 = chrono::high_resolution_clock::now();
   time_milli = t2 - t1;
   for (MovieAndRank& mvr : recommendations) {
