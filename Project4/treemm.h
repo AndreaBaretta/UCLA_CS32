@@ -22,7 +22,7 @@ class TreeMultimap {
     bool color;
     RBNode* right;
     RBNode* left;
-    RBNode(const KeyType& k, const ValueType v)
+    RBNode(const KeyType k, const ValueType v)
         : key(k), values{v}, color(RED), right(nullptr), left(nullptr) {}
   };
   RBNode* root;

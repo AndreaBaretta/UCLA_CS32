@@ -5,55 +5,70 @@
 #include "MovieDatabase.h"
 #include "User.h"
 #include "UserDatabase.h"
+#include "Recommender.h"
 #include "treemm.h"
 
+using namespace std;
+
 int main() {
-  // TreeMultimap<std::string, int> tmm;
+  // TreeMultimap<string, int> tmm;
   // tmm.insert("carey", 5);
   // tmm.insert("carey", 6);
   // tmm.insert("carey", 7);
   // tmm.insert("david", 25);
   // tmm.insert("david", 425);
-  // TreeMultimap<std::string, int>::Iterator it = tmm.find("carey");
+  // TreeMultimap<string, int>::Iterator it = tmm.find("carey");
   // // prints 5, 6, and 7 in some order
   // while (it.is_valid()) {
-  //   std::cout << it.get_value() << std::endl;
+  //   cout << it.get_value() << endl;
   //   it.advance();
   // }
   // it = tmm.find("laura");
   // if (!it.is_valid())
-  //   std::cout << "laura is not in the multimap!\n";
+  //   cout << "laura is not in the multimap!\n";
 
-  UserDatabase db;
-  std::chrono::time_point t1 = std::chrono::high_resolution_clock::now();
-  std::cout << (db.load(std::filesystem::current_path() / "users.txt")
+  UserDatabase u_db;
+  chrono::time_point t1 = chrono::high_resolution_clock::now();
+  cout << (u_db.load(filesystem::current_path() / "users.txt")
                     ? "Successfully loaded user database."
                     : "Error loading users.")
-            << std::endl;
-  std::chrono::time_point t2 = std::chrono::high_resolution_clock::now();
+            << endl;
+  chrono::time_point t2 = chrono::high_resolution_clock::now();
 
-  std::chrono::duration<double, std::milli> db_loading = t2 - t1;
-  std::cout << "Time to load users: " << db_loading.count() << " ms" << std::endl;
+  chrono::duration<double, milli> time_milli = t2 - t1;
+  cout << "Time to load users: " << time_milli.count() << " ms" << endl;
   // db.map.printBlackDist();
-  User* user = db.get_user_from_email("KDo04@inbox.com");
-  std::cout << user->get_email() << std::endl;
-  std::cout << user->get_full_name() << std::endl;
-  std::cout << user->get_watch_history().size() << std::endl;
+  User* user = u_db.get_user_from_email("RylaW06942@inbox.com");
+  cout << user->get_email() << endl;
+  cout << user->get_full_name() << endl;
+  cout << user->get_watch_history().size() << endl;
 
   MovieDatabase m_db;
-  t1 = std::chrono::high_resolution_clock::now();
-  std::cout << (m_db.load(std::filesystem::current_path() / "movies.txt")
+  t1 = chrono::high_resolution_clock::now();
+  cout << (m_db.load(filesystem::current_path() / "movies.txt")
                     ? "Successfully loaded movie database."
                     : "Error loading movies.")
-            << std::endl;
-  t2 = std::chrono::high_resolution_clock::now();
-  db_loading = t2 - t1;
-  std::cout << "Time to load movies: " << db_loading.count() << " ms" << std::endl;
+            << endl;
+  t2 = chrono::high_resolution_clock::now();
+  time_milli = t2 - t1;
+  cout << "Time to load movies: " << time_milli.count() << " ms" << endl;
 
-  std::vector<Movie*> movies = m_db.get_movies_with_actor("Will Smith");
-  std::cout << "Bruce Willis movies: [";
+  string actor = "Christopher Lloyd";
+  vector<Movie*> movies = m_db.get_movies_with_actor(actor);
+  cout << actor << " movies: [";
   for (Movie* m : movies) {
-    std::cout << m->get_title() << ",";
+    cout << m->get_title() << ",";
   }
-  std::cout << "]" << std::endl;
+  cout << "]" << endl;
+
+  Recommender rec(u_db, m_db);
+  cout << "Recommendations for " << user->get_email() << endl;
+  t1 = chrono::high_resolution_clock::now();
+  vector<MovieAndRank> recommendations = rec.recommend_movies(user->get_email(), 100);
+  t2 = chrono::high_resolution_clock::now();
+  time_milli = t2 - t1;
+  for (MovieAndRank& mvr : recommendations) {
+    cout << m_db.get_movie_from_id(mvr.movie_id)->get_title() << " (compat score: " << mvr.compatibility_score << ")" << endl;
+  }
+  cout << "Time to load recommendations: " << time_milli.count() << " ms" << endl;
 }

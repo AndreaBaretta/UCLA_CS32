@@ -23,6 +23,8 @@ class MovieDatabase {
   std::vector<Movie*> get_movies_with_actor(const std::string& actor) const;
   std::vector<Movie*> get_movies_with_genre(const std::string& genre) const;
   ~MovieDatabase();
+ private:
+  std::string str_tolower(std::string s) const;
 };
 
 #endif  // MOVIEDATABASE_INCLUDED

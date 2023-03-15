@@ -6,6 +6,7 @@
 
 class UserDatabase;
 class MovieDatabase;
+class Movie;
 
 struct MovieAndRank {
   MovieAndRank(const std::string& id, int score)
@@ -17,8 +18,22 @@ struct MovieAndRank {
 
 class Recommender {
  private:
+  struct MoviePtrAndRank {
+   public:
+    const Movie* movie;
+    int compatibility_score;
+
+    MoviePtrAndRank(const Movie* movie, int score)
+        : movie(movie), compatibility_score(score) {}
+
+    bool operator<(const MoviePtrAndRank& a) const;
+
+    bool operator==(const MoviePtrAndRank& a) const;
+  };
+
   const UserDatabase& user_database;
   const MovieDatabase& movie_database;
+
  public:
   Recommender(const UserDatabase& user_database,
               const MovieDatabase& movie_database);

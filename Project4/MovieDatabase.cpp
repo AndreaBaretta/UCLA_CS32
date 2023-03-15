@@ -1,6 +1,8 @@
 #include "MovieDatabase.h"
 #include "Movie.h"
 
+#include <algorithm>
+#include <cctype>
 #include <fstream>
 #include <iostream>
 #include <sstream>
@@ -13,31 +15,31 @@ MovieDatabase::MovieDatabase()
     : id_map(), dir_map(), actor_map(), genre_map() {}
 
 bool MovieDatabase::load(const string& filename) {
-  std::ifstream file;
+  ifstream file;
   file.open(filename);
-  std::string line;
-  std::string substr;
+  string line;
+  string substr;
 
-  std::string id;
-  std::string title;
-  std::string release_year;
+  string id;
+  string title;
+  string release_year;
   float rating;
-  while (std::getline(file, id)) {
-    std::vector<std::string> directors;
-    std::vector<std::string> actors;
-    std::vector<std::string> genres;
+  while (getline(file, id)) {
+    vector<string> directors;
+    vector<string> actors;
+    vector<string> genres;
 
-    if (!std::getline(file, title)) {
+    if (!getline(file, title)) {
       file.close();
       return false;
     }
 
-    if (!std::getline(file, release_year)) {
+    if (!getline(file, release_year)) {
       file.close();
       return false;
     }
 
-    if (!std::getline(file, line)) {
+    if (!getline(file, line)) {
       file.close();
       return false;
     }
@@ -48,7 +50,7 @@ bool MovieDatabase::load(const string& filename) {
       directors.push_back(substr);
     }
 
-    if (!std::getline(file, line)) {
+    if (!getline(file, line)) {
       file.close();
       return false;
     }
@@ -60,7 +62,7 @@ bool MovieDatabase::load(const string& filename) {
       actors.push_back(substr);
     }
 
-    if (!std::getline(file, line)) {
+    if (!getline(file, line)) {
       file.close();
       return false;
     }
@@ -72,58 +74,49 @@ bool MovieDatabase::load(const string& filename) {
       genres.push_back(substr);
     }
 
-    if (!std::getline(file, line)) {
+    if (!getline(file, line)) {
       file.close();
       return false;
     }
 
-    rating = std::stof(line);
+    rating = stof(line);
     if (rating < 0) {
       file.close();
       return false;
     }
 
-    std::getline(file, line);
-
-    // std::cout << "New user: " << full_name << " (" << email
-    //           << "): " << num_movies << " in history" << std::endl;
-
-    // std::cout << "New movie " << id << ": " << title << " (" << release_year
-    //           << ") - Dir: [";
+    getline(file, line);
 
     Movie* new_movie =
         new Movie(id, title, release_year, directors, actors, genres, rating);
     movies.push_back(new_movie);
-    id_map.insert(new_movie->get_id(), new_movie);
-    for (std::string d : new_movie->get_directors()) {
-      dir_map.insert(d, new_movie);
-      // std::cout << d << ",";
+
+    id_map.insert(str_tolower(new_movie->get_id()), new_movie);
+    for (string d : new_movie->get_directors()) {
+      dir_map.insert(str_tolower(d), new_movie);
     }
-    // std::cout << "] - Actors: [";
-    for (std::string a : new_movie->get_actors()) {
-      actor_map.insert(a, new_movie);
-      // std::cout << a << ",";
+    for (string a : new_movie->get_actors()) {
+      actor_map.insert(str_tolower(a), new_movie);
     }
-    // std::cout << "] - Genres: [";
-    for (std::string g : new_movie->get_genres()) {
-      genre_map.insert(g, new_movie);
-      // std::cout << g << ",";
+    for (string g : new_movie->get_genres()) {
+      genre_map.insert(str_tolower(g), new_movie);
     }
-    // std::cout << "] - Rating: " << rating << std::endl;
   }
   file.close();
   return true;
 }
 
 Movie* MovieDatabase::get_movie_from_id(const string& id) const {
-  auto it = id_map.find(id);
+  const string l_id = str_tolower(id);
+  auto it = id_map.find(l_id);
   return it.is_valid() ? it.get_value() : nullptr;
 }
 
 vector<Movie*> MovieDatabase::get_movies_with_director(
     const string& director) const {
   vector<Movie*> v;
-  for (auto it = dir_map.find(director); it.is_valid(); it.advance()) {
+  const string l_director = str_tolower(director);
+  for (auto it = dir_map.find(l_director); it.is_valid(); it.advance()) {
     v.push_back(it.get_value());
   }
   return v;
@@ -131,7 +124,8 @@ vector<Movie*> MovieDatabase::get_movies_with_director(
 
 vector<Movie*> MovieDatabase::get_movies_with_actor(const string& actor) const {
   vector<Movie*> v;
-  for (auto it = actor_map.find(actor); it.is_valid(); it.advance()) {
+  const string l_actor = str_tolower(actor);
+  for (auto it = actor_map.find(l_actor); it.is_valid(); it.advance()) {
     v.push_back(it.get_value());
   }
   return v;
@@ -139,7 +133,8 @@ vector<Movie*> MovieDatabase::get_movies_with_actor(const string& actor) const {
 
 vector<Movie*> MovieDatabase::get_movies_with_genre(const string& genre) const {
   vector<Movie*> v;
-  for (auto it = genre_map.find(genre); it.is_valid(); it.advance()) {
+  const string l_genre = str_tolower(genre);
+  for (auto it = genre_map.find(l_genre); it.is_valid(); it.advance()) {
     v.push_back(it.get_value());
   }
   return v;
@@ -149,4 +144,10 @@ MovieDatabase::~MovieDatabase() {
   for (Movie* p : movies) {
     delete p;
   }
+}
+
+string MovieDatabase::str_tolower(string s) const {
+  std::transform(s.begin(), s.end(), s.begin(),
+                 [](unsigned char c) { return tolower(c); });
+  return s;
 }
