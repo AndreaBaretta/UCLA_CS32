@@ -28,6 +28,7 @@ class Recommender {
                                              int movie_count) const;
 
  private:
+  std::string str_tolower(std::string s) const;
 };
 
 #endif  // RECOMMENDER_INCLUDED

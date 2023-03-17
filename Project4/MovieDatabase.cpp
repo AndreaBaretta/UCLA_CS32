@@ -147,7 +147,7 @@ MovieDatabase::~MovieDatabase() {
 }
 
 string MovieDatabase::str_tolower(string s) const {
-  std::transform(s.begin(), s.end(), s.begin(),
+  transform(s.begin(), s.end(), s.begin(),
                  [](unsigned char c) { return tolower(c); });
   return s;
 }

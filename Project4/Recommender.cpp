@@ -7,10 +7,10 @@
 
 #include <algorithm>
 #include <list>
-#include <unordered_map>
-#include <unordered_set>
 #include <set>
 #include <string>
+#include <unordered_map>
+#include <unordered_set>
 #include <utility>
 #include <vector>
 using namespace std;
@@ -30,7 +30,8 @@ vector<MovieAndRank> Recommender::recommend_movies(const string& user_email,
   }
   unordered_map<Movie*, int> recommends;
 
-  std::vector<string> watch_history_ids = user_database.get_user_from_email(user_email)->get_watch_history();
+  std::vector<string> watch_history_ids =
+      user_database.get_user_from_email(user_email)->get_watch_history();
   std::unordered_set<Movie*> watch_history_ptrs;
 
   for (string id : watch_history_ids) {
@@ -57,8 +58,7 @@ vector<MovieAndRank> Recommender::recommend_movies(const string& user_email,
   }
 
   // Flip all values to instantly put list in right order
-  auto comp = [](const pair<Movie*, int>& a,
-                 const pair<Movie*, int>& b) {
+  auto comp = [&](const pair<Movie*, int>& a, const pair<Movie*, int>& b) {
     if (a.second < b.second) {
       return true;
     } else if (a.second > b.second) {
@@ -68,7 +68,8 @@ vector<MovieAndRank> Recommender::recommend_movies(const string& user_email,
     } else if (a.first->get_rating() > b.first->get_rating()) {
       return false;
     } else {
-      return a.first->get_title() < b.first->get_title();
+      return str_tolower(a.first->get_title()) <
+             str_tolower(b.first->get_title());
     }
   };
 
@@ -90,4 +91,10 @@ vector<MovieAndRank> Recommender::recommend_movies(const string& user_email,
   }
 
   return ret;
+}
+
+string Recommender::str_tolower(string s) const {
+  transform(s.begin(), s.end(), s.begin(),
+            [](unsigned char c) { return tolower(c); });
+  return s;
 }

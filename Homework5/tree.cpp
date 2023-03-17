@@ -20,11 +20,13 @@ class Tree {
 
   Node* head;
   Tree() : head(nullptr) {}
+
   void insert(int data) {
     if (head == nullptr) {
       head = new Node(data);
+    } else {
+      insert(data, head);
     }
-    insert(data, head);
   }
 
   void remove(int data) {
