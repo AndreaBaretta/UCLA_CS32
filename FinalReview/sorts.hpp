@@ -2,7 +2,7 @@
 #include <vector>
 #include <iostream>
 
-void print(const std::vector<int>& a) {
+void print_container(const std::vector<int>& a) {
   for (int i = 0; i < a.size(); ++i) {
     std::cout << a[i] << " ";
   }
@@ -134,4 +134,58 @@ void quickSort(std::vector<int>& a, int l, int r) {
   int pivot = partition(a, l, r);
   quickSort(a, l, pivot);
   quickSort(a, pivot+1, r);
+}
+
+int getParent(int x) {
+  return (x-1)/2;
+}
+
+int leftChild(int x) {
+  return 2*x + 1;
+}
+
+int rightChild(int x) {
+  return 2*x + 2;
+}
+
+bool heapify(std::vector<int>& a, int index, int size, bool both_sides = true) {
+  if (index >= size) {
+    return true;
+  }
+  bool ret = true;
+  int leftChild_index = leftChild(index) < size ? leftChild(index) : index;
+  int rightChild_index = rightChild(index) < size ? rightChild(index) : index;
+
+  if (a[index] < a[leftChild_index] || a[index] < a[rightChild_index]) {
+    int max_index = leftChild_index;
+    if (a[rightChild_index] > a[leftChild_index]) {
+      max_index = rightChild_index;
+    }
+    std::swap(a[index], a[max_index]);
+    ret = false;
+    if (!both_sides) {
+      heapify(a, max_index, size, false);
+    }
+  }
+  if (both_sides) {
+    if (leftChild_index != index) {
+      ret = ret && heapify(a, leftChild_index, size);
+    }
+    if (rightChild_index != index) {
+      ret = ret && heapify(a, rightChild_index, size);
+    }
+  }
+  return ret;
+}
+
+void heapSort(std::vector<int>& a) {
+  while (!heapify(a, 0, a.size()));
+  int size = a.size();
+  // print_container(heap);
+  // std::cout << a.size() << std::endl;
+  for (int i = a.size()-1; i >= 0; --i) {
+    std::swap(a[0], a[size-1]);
+    size--;
+    heapify(a, 0, size, false);
+  }
 }
