@@ -38,7 +38,7 @@ int main() {
   chrono::duration<double, milli> time_milli = t2 - t1;
   cout << "Time to load users: " << time_milli.count() << " ms" << endl;
   // db.map.printBlackDist();
-  User* user = u_db.get_user_from_email("RylaW06942@inbox.com");
+  User* user = u_db.get_user_from_email("vader@darkside.org");
   cout << user->get_email() << endl;
   cout << user->get_full_name() << endl;
   cout << user->get_watch_history().size() << endl;
